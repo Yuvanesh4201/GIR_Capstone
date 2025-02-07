@@ -1,10 +1,9 @@
-using GIR_Capstone.Server.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GIR_Capstone.Server.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class GIRController : ControllerBase
     {
         private readonly ICorporateRepository _userRepository;
@@ -14,10 +13,10 @@ namespace GIR_Capstone.Server.Controllers
            _userRepository = userRepository;
         }
 
-        [HttpGet(Name = "RetrieveCorporates")]
-        public IActionResult RetrieveCorporates()
+        [HttpGet("RetrieveCorporates")]
+        public async Task<IActionResult> RetrieveCorporates()
         {
-            List<Corporate> corporates = _userRepository.GetAllCorporates();
+            List<Corporate> corporates = await _userRepository.GetAllCorporatesAsync();
             return Ok(corporates);
         }
     }

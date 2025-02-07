@@ -2,5 +2,5 @@ using System.Collections.Generic;
 
 public interface ICorporateRepository
 {
-    List<Corporate> GetAllCorporates();
+    Task<List<Corporate>> GetAllCorporatesAsync();
 }

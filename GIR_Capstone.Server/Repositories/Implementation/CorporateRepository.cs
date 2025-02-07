@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,8 +11,8 @@ public class CorporateRepository : ICorporateRepository
         _context = context;
     }
 
-    public List<Corporate> GetAllCorporates()
+    public async Task<List<Corporate>> GetAllCorporatesAsync()
     {
-        return _context.Corporates.ToList();
+        return await _context.Corporates.ToListAsync();
     }
 }

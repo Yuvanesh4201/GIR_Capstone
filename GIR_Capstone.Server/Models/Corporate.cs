@@ -4,6 +4,6 @@ public class Corporate
 {
     [Key]
     public int StructureId { get; set; }
-    public string MNEName { get; set; } = string.Empty;
-    public int XMLSubmissionId { get; set; }
+    public string MneName { get; set; } = string.Empty;
+    public int XmlSubmissionId { get; set; }
 }

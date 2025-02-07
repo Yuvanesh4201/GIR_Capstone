@@ -3,4 +3,7 @@
 GET {{GIR_Capstone.Server_HostAddress}}/weatherforecast/
 Accept: application/json
 
+GET {{GIR_Capstone.Server_HostAddress}}/api/GIR/RetrieveCorporates/
+Accept: application/json
+
 ###
