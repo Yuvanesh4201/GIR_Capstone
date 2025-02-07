@@ -1,54 +1,45 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { GIRService } from '../services/gir-graph.service';
+import { Corporate } from '../models/corporate.model';
 
 @Component({
   selector: 'app-gir-search',
   templateUrl: './gir-search.component.html',
   styleUrl: './gir-search.component.css'
 })
-export class GirSearchComponent {
-
-  constructor(private router: Router) {
-
-  }
-
-  searchQuery: string = '';
-  selectedItem: string | null = null;
+export class GirSearchComponent implements OnInit {
+  selectedCorporate!: Corporate;
   isDropdownOpen = false;
+  searchQuery: string = '';
+  corporates!: Corporate[];
 
-  mnes: string[] = [
-    'Apple Inc.',
-    'Microsoft Corporation',
-    'Amazon',
-    'Google (Alphabet Inc.)',
-    'Facebook (Meta Platforms)',
-    'Tesla',
-    'Samsung Electronics',
-    'Toyota Motor Corporation',
-    'Coca-Cola',
-    'Nike',
-    'McDonald’s',
-    'IBM',
-    'General Electric',
-    'Siemens',
-    'Nestlé',
-    'Honda Motor Co.',
-    'Procter & Gamble (P&G)',
-    'Unilever',
-    'Pfizer',
-    'Johnson & Johnson'
-  ];
+  constructor(private router: Router, private girService: GIRService)
+  {}
 
-
-  get filteredItems(): string[] {
-    return this.mnes.filter(mne =>
-      mne.toLowerCase().includes(this.searchQuery.toLowerCase())
+  ngOnInit() {
+    this.girService.getCorporates().subscribe(
+      (data) => {
+        if (data) {
+          this.corporates = data;
+        }
+      },
+      (error) => {
+        console.error("Error fetching corporates:", error);
+      }
     );
   }
+  get filteredItems(): Corporate[] {
+    if (!this.corporates || this.corporates.length === 0) {
+      return [];
+    }
+    return this.corporates
+      .filter(mne => mne.mneName.toLowerCase().startsWith(this.searchQuery.toLowerCase()));
+  }
 
-  selectItem(item: string) {
-    this.selectedItem = item;
-    this.searchQuery = item;
+  selectItem(item: Corporate) {
+    this.selectedCorporate = item;
+    this.searchQuery = item.mneName;
     this.isDropdownOpen = false;
   }
 
@@ -57,10 +48,9 @@ export class GirSearchComponent {
   }
 
   runSearch() {
-    const query = this.selectedItem || this.searchQuery;
-    if (query) {
-      alert(`Searching for: ${query}`);
-      this.router.navigateByUrl("gir-cyto-graph");
+    if (this.selectedCorporate) {
+      alert(`Searching for: ${this.searchQuery}`);
+      this.router.navigate(['/gir-cyto-graph'], { queryParams: { id: this.selectedCorporate.structureId, name: this.selectedCorporate.mneName } });
     } else {
       alert('Please enter a search term.');
     }
