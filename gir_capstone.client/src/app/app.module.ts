@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
@@ -6,12 +6,15 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { GirGraphCytoComponent } from './gir-graph-cyto/gir-graph-cyto.component';
 import { GirSearchComponent } from './gir-search/gir-search.component';
+import { LoaderComponent } from './components/loader/loader.component';
+import { LoaderInterceptorService } from './interceptors/loader-interceptor.service';
 
 @NgModule({
   declarations: [
     AppComponent,
     GirGraphCytoComponent,
-    GirSearchComponent
+    GirSearchComponent,
+    LoaderComponent
   ],
   imports: [
     BrowserModule,
@@ -19,7 +22,9 @@ import { GirSearchComponent } from './gir-search/gir-search.component';
     AppRoutingModule,
     FormsModule,
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptorService, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
