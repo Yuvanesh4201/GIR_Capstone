@@ -3,7 +3,10 @@ using System.ComponentModel.DataAnnotations;
 public class Corporate
 {
     [Key]
-    public int StructureId { get; set; }
+    public Guid StructureId { get; set; }
     public string MneName { get; set; } = string.Empty;
-    public int XmlSubmissionId { get; set; }
+    public Guid XmlSubmissionId { get; set; }
+
+    // Navigation Properties
+    public virtual ICollection<CorporateEntity>? Entities { get; set; }
 }

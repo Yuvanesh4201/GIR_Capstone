@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GIR_Capstone.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250210081937_EditCodeDecodeGlobeStatus")]
+    partial class EditCodeDecodeGlobeStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,29 +45,6 @@ namespace GIR_Capstone.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CodeDecodeGlobeStatus");
-                });
-
-            modelBuilder.Entity("CodeDecodeOwnershipType", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Abbreviation")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DecodeDescription")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CodeDecodeOwnershipType");
                 });
 
             modelBuilder.Entity("Corporate", b =>
@@ -105,7 +85,7 @@ namespace GIR_Capstone.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("ParentId")
+                    b.Property<Guid>("ParentId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Tin")
@@ -134,8 +114,8 @@ namespace GIR_Capstone.Server.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("OwnershipPercentage")
-                        .HasPrecision(4, 1)
-                        .HasColumnType("decimal(4,1)");
+                        .HasPrecision(2, 1)
+                        .HasColumnType("decimal(2,1)");
 
                     b.Property<string>("OwnershipType")
                         .IsRequired()
@@ -176,7 +156,8 @@ namespace GIR_Capstone.Server.Migrations
                     b.HasOne("CorporateEntity", "ParentEntity")
                         .WithMany("ChildEntities")
                         .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("Corporate");
 
