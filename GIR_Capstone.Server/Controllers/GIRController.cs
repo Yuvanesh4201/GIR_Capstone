@@ -16,8 +16,15 @@ namespace GIR_Capstone.Server.Controllers
         [HttpGet("RetrieveCorporates")]
         public async Task<IActionResult> RetrieveCorporates()
         {
-            List<Corporate> corporates = await _userRepository.GetAllCorporatesAsync();
+            List<CorporateDto> corporates = await _userRepository.GetAllCorporatesAsync();
             return Ok(corporates);
+        }
+        
+        [HttpGet("RetrieveCorporateStructure/{corporateId}")]
+        public async Task<IActionResult> RetrieveCorporateStructure(string corporateId)
+        {
+            List<CorporateEntityDto> corporateStructure = await _userRepository.GetCorporateStructureAsync(corporateId);
+            return Ok(corporateStructure);
         }
     }
 }
