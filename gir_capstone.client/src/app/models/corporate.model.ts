@@ -1,5 +1,4 @@
 export interface Corporate {
-  structureId: number;
+  structure_Id: string;
   mneName: string;
-  xmlSubmissionId: number;
 }
