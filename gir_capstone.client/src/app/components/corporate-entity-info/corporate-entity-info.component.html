@@ -1,0 +1,31 @@
+<div class="info-box">
+  <div class="info-row">
+    <label>Name:</label>
+    <span>{{ corporateEntityInfo?.name }}</span>
+  </div>
+
+  <div class="info-row">
+    <label>Jurisdiction:</label>
+    <span>{{ corporateEntityInfo?.jusridiction }}</span> <!-- Fixed spelling -->
+  </div>
+
+  <div class="info-row">
+    <label>TIN:</label>
+    <span>{{ corporateEntityInfo?.tin }}</span>
+  </div>
+
+  <div class="info-row">
+    <label>Is Excluded:</label>
+    <span *ngIf="corporateEntityInfo?.is_Excluded; else NotExcluded">Yes</span>
+  </div>
+
+  <div class="info-row">
+    <label>Statuses:</label>
+    <span *ngFor="let status of corporateEntityInfo?.statuses">{{ status }}</span> <!-- Fixed display -->
+  </div>
+
+  <ng-template #NotExcluded>
+    <!-- Fixed template reference -->
+    <span>No</span>
+  </ng-template>
+</div>

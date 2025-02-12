@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import cytoscape from 'cytoscape';
 import { CorporateEntity } from '../models/company-structure.model';
 import { GIRService } from '../services/gir-graph.service';
+import { girCytoGraphStyle } from './gir-graph-cyto-style';
 
 @Component({
   selector: 'app-gir-graph-cyto',
@@ -12,16 +13,21 @@ import { GIRService } from '../services/gir-graph.service';
 export class GirGraphCytoComponent implements OnInit {
   @ViewChild('graph', { static: false }) cyContainer!: ElementRef;
   corporateStructure: CorporateEntity[] = [];
+  selectedCorporateEntity!: CorporateEntity;
+  showselectedCorporateEntityInfo: Boolean = false;
+  cy: any;
+  corporateId: any;
+  zoom: number = 1.5;
   constructor(private route: ActivatedRoute, private girService: GIRService) {}
 
   ngOnInit() {
-    const corporateId = this.route.snapshot.queryParamMap.get('id');
+    this.corporateId = this.route.snapshot.queryParamMap.get('id');
 
-    if (corporateId) {
-      this.girService.getCorporateStructure(corporateId).subscribe(
+    if (this.corporateId) {
+      this.girService.getCorporateStructure(this.corporateId).subscribe(
         (data) => {
           if (data) {
-            console.log('Corporate ID Works:', corporateId);
+            console.log('Corporate ID Works:', this.corporateId);
             this.corporateStructure = data;
             this.renderGraph();
           }
@@ -35,65 +41,83 @@ export class GirGraphCytoComponent implements OnInit {
 
   renderGraph(): void {
     const corporateId = this.route.snapshot.queryParamMap.get('id') ?? "";
-    const cy = cytoscape({
+    this.cy = cytoscape({
       container: this.cyContainer.nativeElement,
+      pixelRatio: 3,
       elements: [
         ...this.corporateStructure.map(node => ({
-          data: { id: node.id, label: node.name }
+          data: {
+            id: node.id,
+            label: node.name,
+            entityInfo: node,
+            type: "child"
+          },
+          grabbable: false,
         })),
         ...this.corporateStructure.flatMap(corp =>
           corp.ownerships.map(edge => ({
-            data: { source: edge.ownerEntityId, target: corp.id }
+            data: {
+              source: edge.ownerEntityId,
+              target: corp.id,
+              label: `Owns ${edge.ownershipPercentage}%`,
+              ownershipInfo: edge
+            },
+            grabbable: false,
           }))
         )
       ], 
-      style: [
-        {
-          selector: 'node',
-          style: {
-            'background-color': '#0074D9',
-            'label': 'data(label)',
-            'color': '#fff',
-            'text-valign': 'center',
-            'text-halign': 'center',
-            'font-size': '12px',
-            'width': 'label',
-            'height': 'label',
-            'shape': 'roundrectangle'
-          }
-        },
-        {
-          selector: 'edge',
-          style: {
-            'width': 2,
-            'line-color': '#aaa',
-            'target-arrow-color': '#aaa',
-            'target-arrow-shape': 'triangle'
-          }
-        }
-      ],
-
+      style: girCytoGraphStyle,
       layout: { name: 'breadthfirst' },
     })
 
     const rootNode = {
-      data: { id: corporateId ?? 'Blank', label: this.route.snapshot.queryParamMap.get('name') ?? 'Blank' }
+      data: {
+        id: corporateId ?? 'Blank',
+        label: this.route.snapshot.queryParamMap.get('name') ?? 'Blank',
+        type: "root"
+      }
     };
-    cy.add(rootNode);
+
+    this.zoom = this.cy.zoom();
+
+    this.cy.add(rootNode);
 
     this.corporateStructure.forEach(corp => {
       if (corp.parentId == null)
-        cy.add({ data: { source: corporateId, target: corp.id } })
+        this.cy.add({ data: { source: corporateId, target: corp.id } })
     }
     )
 
-    cy.layout({
+    this.cy.on('tap', 'node[type="child"]', (event:any) => {
+      const node = event.target;
+      this.showselectedCorporateEntityInfo = true;
+      this.selectedCorporateEntity = node.data().entityInfo;
+    });
+
+    this.cy.on('tap', (event: any) => {
+      if (event.target === this.cy) {
+        this.showselectedCorporateEntityInfo = false;
+      }
+    });
+
+    this.cy.layout({
       name: 'breadthfirst',
       roots: [corporateId],
       directed: true,
       spacingFactor: 1.5
     }).run();
 
+    this.cy.zoom(this.zoom);
+    this.cy.centre();
     }
- 
+
+  resetLayout() {
+    this.cy.reset();
+    this.cy.zoom(this.zoom);
+    this.cy.centre();
+  }
+
+  fitView() {
+    this.cy.fit();
+  }
 }

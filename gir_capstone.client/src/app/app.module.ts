@@ -8,13 +8,15 @@ import { GirGraphCytoComponent } from './gir-graph-cyto/gir-graph-cyto.component
 import { GirSearchComponent } from './gir-search/gir-search.component';
 import { LoaderComponent } from './components/loader/loader.component';
 import { LoaderInterceptorService } from './interceptors/loader-interceptor.service';
+import { CorporateEntityInfoComponent } from './components/corporate-entity-info/corporate-entity-info.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     GirGraphCytoComponent,
     GirSearchComponent,
-    LoaderComponent
+    LoaderComponent,
+    CorporateEntityInfoComponent
   ],
   imports: [
     BrowserModule,
