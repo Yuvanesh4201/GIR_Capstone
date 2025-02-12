@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import cytoscape from 'cytoscape';
+import { CorporateEntity } from '../models/company-structure.model';
 import { GIRService } from '../services/gir-graph.service';
 
 @Component({
@@ -8,20 +9,21 @@ import { GIRService } from '../services/gir-graph.service';
   templateUrl: './gir-graph-cyto.component.html',
   styleUrls: ['./gir-graph-cyto.component.css']
 })
-export class GirGraphCytoComponent implements OnInit, AfterViewInit {
+export class GirGraphCytoComponent implements OnInit {
   @ViewChild('graph', { static: false }) cyContainer!: ElementRef;
-
-  constructor(private route: ActivatedRoute, private girService: GIRService) { }
+  corporateStructure: CorporateEntity[] = [];
+  constructor(private route: ActivatedRoute, private girService: GIRService) {}
 
   ngOnInit() {
     const corporateId = this.route.snapshot.queryParamMap.get('id');
-    console.log('Corporate ID:', corporateId);
 
     if (corporateId) {
       this.girService.getCorporateStructure(corporateId).subscribe(
         (data) => {
           if (data) {
             console.log('Corporate ID Works:', corporateId);
+            this.corporateStructure = data;
+            this.renderGraph();
           }
         },
         (error) => {
@@ -31,18 +33,20 @@ export class GirGraphCytoComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngAfterViewInit(): void {
-    
+  renderGraph(): void {
+    const corporateId = this.route.snapshot.queryParamMap.get('id') ?? "";
     const cy = cytoscape({
       container: this.cyContainer.nativeElement,
       elements: [
-        { data: { id: 'A', label: 'Node A' } },
-        { data: { id: 'B', label: 'Node B' } },
-        { data: { id: 'C', label: 'Node C' } },
-        { data: { source: 'A', target: 'B' } },
-        { data: { source: 'A', target: 'C' } }
-      ],
-
+        ...this.corporateStructure.map(node => ({
+          data: { id: node.id, label: node.name }
+        })),
+        ...this.corporateStructure.flatMap(corp =>
+          corp.ownerships.map(edge => ({
+            data: { source: edge.ownerEntityId, target: corp.id }
+          }))
+        )
+      ], 
       style: [
         {
           selector: 'node',
@@ -70,11 +74,26 @@ export class GirGraphCytoComponent implements OnInit, AfterViewInit {
       ],
 
       layout: { name: 'breadthfirst' },
-
     })
 
-    cy.resize();
-    cy.fit();
+    const rootNode = {
+      data: { id: corporateId ?? 'Blank', label: this.route.snapshot.queryParamMap.get('name') ?? 'Blank' }
+    };
+    cy.add(rootNode);
+
+    this.corporateStructure.forEach(corp => {
+      if (corp.parentId == null)
+        cy.add({ data: { source: corporateId, target: corp.id } })
+    }
+    )
+
+    cy.layout({
+      name: 'breadthfirst',
+      roots: [corporateId],
+      directed: true,
+      spacingFactor: 1.5
+    }).run();
+
     }
  
 }
