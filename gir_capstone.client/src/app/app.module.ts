@@ -9,6 +9,7 @@ import { GirSearchComponent } from './gir-search/gir-search.component';
 import { LoaderComponent } from './components/loader/loader.component';
 import { LoaderInterceptorService } from './interceptors/loader-interceptor.service';
 import { CorporateEntityInfoComponent } from './components/corporate-entity-info/corporate-entity-info.component';
+import { OwnershipInfoComponent } from './components/ownership-info/ownership-info.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { CorporateEntityInfoComponent } from './components/corporate-entity-info
     GirGraphCytoComponent,
     GirSearchComponent,
     LoaderComponent,
-    CorporateEntityInfoComponent
+    CorporateEntityInfoComponent,
+    OwnershipInfoComponent
   ],
   imports: [
     BrowserModule,

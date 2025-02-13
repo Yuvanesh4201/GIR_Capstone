@@ -8,6 +8,4 @@ import { CorporateEntity } from '../../models/company-structure.model';
 })
 export class CorporateEntityInfoComponent {
   @Input() corporateEntityInfo!: CorporateEntity;
-
-
 }

@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import cytoscape from 'cytoscape';
-import { CorporateEntity } from '../models/company-structure.model';
+import { CorporateEntity, Ownership } from '../models/company-structure.model';
 import { GIRService } from '../services/gir-graph.service';
 import { girCytoGraphStyle } from './gir-graph-cyto-style';
 
@@ -14,7 +14,11 @@ export class GirGraphCytoComponent implements OnInit {
   @ViewChild('graph', { static: false }) cyContainer!: ElementRef;
   corporateStructure: CorporateEntity[] = [];
   selectedCorporateEntity!: CorporateEntity;
-  showselectedCorporateEntityInfo: Boolean = false;
+  selectedOwnership!: Ownership;
+  selectedOwnerName!: string;
+  selectedOwnedName!: string;
+  showSelectedCorporateEntityInfo: Boolean = false;
+  showSelectedOwnershipInfo: Boolean = false;
   cy: any;
   corporateId: any;
   zoom: number = 1.5;
@@ -60,7 +64,9 @@ export class GirGraphCytoComponent implements OnInit {
               source: edge.ownerEntityId,
               target: corp.id,
               label: `Owns ${edge.ownershipPercentage}%`,
-              ownershipInfo: edge
+              ownershipInfo: edge,
+              ownedName: corp.name,
+              ownerName: this.corporateStructure.find(node => node.id === edge.ownerEntityId)?.name
             },
             grabbable: false,
           }))
@@ -90,13 +96,24 @@ export class GirGraphCytoComponent implements OnInit {
 
     this.cy.on('tap', 'node[type="child"]', (event:any) => {
       const node = event.target;
-      this.showselectedCorporateEntityInfo = true;
+      this.showSelectedCorporateEntityInfo = true;
+      this.showSelectedOwnershipInfo = false;
       this.selectedCorporateEntity = node.data().entityInfo;
+    });
+
+    this.cy.on('tap', 'edge', (event: any) => {
+      const edge = event.target;
+      this.showSelectedCorporateEntityInfo = false;
+      this.showSelectedOwnershipInfo = true;
+      this.selectedOwnership = edge.data().ownershipInfo;
+      this.selectedOwnedName = edge.data().ownedName;
+      this.selectedOwnerName = edge.data().ownerName;
     });
 
     this.cy.on('tap', (event: any) => {
       if (event.target === this.cy) {
-        this.showselectedCorporateEntityInfo = false;
+        this.showSelectedCorporateEntityInfo = false;
+        this.showSelectedOwnershipInfo = false;
       }
     });
 

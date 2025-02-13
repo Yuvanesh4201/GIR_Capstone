@@ -1,8 +1,13 @@
 <div class="cy-wrapper">
   <div #graph class="cy-container"></div>
 </div>
-<app-corporate-entity-info *ngIf="showselectedCorporateEntityInfo" [corporateEntityInfo]="selectedCorporateEntity"></app-corporate-entity-info>
-
+<app-corporate-entity-info *ngIf="showSelectedCorporateEntityInfo"
+[corporateEntityInfo]="selectedCorporateEntity">
+</app-corporate-entity-info>
+<app-ownership-info *ngIf="showSelectedOwnershipInfo"
+ [ownershipInfo]="selectedOwnership"
+ [ownedName] ="selectedOwnedName"
+ [ownerName] ="selectedOwnerName">
+</app-ownership-info>
 <button class="reset-button" (click)="resetLayout()">Reset Layout</button>
 <button class="fit-button" (click)="fitView()">Fit to Screen</button>
-
