@@ -38,6 +38,25 @@
     white-space: nowrap;
   }
 
+  .info-row a {
+    flex: 2;
+    text-align: center;
+    font-size: 10px;
+    color: #007BFF; /* A standard blue for links */
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Prevents overflow */
+    white-space: nowrap;
+    text-decoration: none; /* Removes default underline */
+    transition: color 0.3s ease-in-out; /* Smooth hover effect */
+  }
+
+    .info-row a:hover {
+      color: #0056b3; /* Darker blue on hover for interaction */
+      text-decoration: underline; /* Adds underline on hover */
+    }
+
+
 /* ✅ Optional: Add a hover effect for a sleek interactive feel */
 .info-box:hover {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);

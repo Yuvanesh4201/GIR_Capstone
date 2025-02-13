@@ -1,0 +1,22 @@
+<div class="table-wrapper">
+  <span class="table-title">{{ownedName}}</span>
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+    <ng-container matColumnDef="ownerName">
+      <th mat-header-cell *matHeaderCellDef> Owner Name </th>
+      <td mat-cell *matCellDef="let ownership"> {{ ownership.ownerName }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="ownedName">
+      <th mat-header-cell *matHeaderCellDef> Ownership Type </th>
+      <td mat-cell *matCellDef="let ownership"> {{ ownership.ownershipType }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="ownershipPercentage">
+      <th mat-header-cell *matHeaderCellDef> Ownership % </th>
+      <td mat-cell *matCellDef="let ownership"> {{ ownership.ownershipPercentage }}% </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>

@@ -15,10 +15,12 @@ export class GirGraphCytoComponent implements OnInit {
   corporateStructure: CorporateEntity[] = [];
   selectedCorporateEntity!: CorporateEntity;
   selectedOwnership!: Ownership;
+  selectedOwnerships!: Ownership[];
   selectedOwnerName!: string;
   selectedOwnedName!: string;
-  showSelectedCorporateEntityInfo: Boolean = false;
-  showSelectedOwnershipInfo: Boolean = false;
+  showSelectedCorporateEntityInfo: boolean = false;
+  showSelectedOwnershipInfo: boolean = false;
+  showSelectedOwnershipList: boolean = false;
   cy: any;
   corporateId: any;
   zoom: number = 1.5;
@@ -66,7 +68,7 @@ export class GirGraphCytoComponent implements OnInit {
               label: `Owns ${edge.ownershipPercentage}%`,
               ownershipInfo: edge,
               ownedName: corp.name,
-              ownerName: this.corporateStructure.find(node => node.id === edge.ownerEntityId)?.name
+              ownerName: edge.ownerName,
             },
             grabbable: false,
           }))
@@ -98,6 +100,7 @@ export class GirGraphCytoComponent implements OnInit {
       const node = event.target;
       this.showSelectedCorporateEntityInfo = true;
       this.showSelectedOwnershipInfo = false;
+      this.showSelectedOwnershipList = false;
       this.selectedCorporateEntity = node.data().entityInfo;
     });
 
@@ -105,6 +108,7 @@ export class GirGraphCytoComponent implements OnInit {
       const edge = event.target;
       this.showSelectedCorporateEntityInfo = false;
       this.showSelectedOwnershipInfo = true;
+      this.showSelectedOwnershipList = false;
       this.selectedOwnership = edge.data().ownershipInfo;
       this.selectedOwnedName = edge.data().ownedName;
       this.selectedOwnerName = edge.data().ownerName;
@@ -114,6 +118,7 @@ export class GirGraphCytoComponent implements OnInit {
       if (event.target === this.cy) {
         this.showSelectedCorporateEntityInfo = false;
         this.showSelectedOwnershipInfo = false;
+        this.showSelectedOwnershipList = false;
       }
     });
 
@@ -136,5 +141,12 @@ export class GirGraphCytoComponent implements OnInit {
 
   fitView() {
     this.cy.fit();
+  }
+
+  setShowOwnershipList(ownerships: Ownership[]) {
+    this.showSelectedOwnershipList = true;
+    this.showSelectedCorporateEntityInfo = false;
+    this.showSelectedOwnershipInfo = false;
+    this.selectedOwnerships = ownerships;
   }
 }

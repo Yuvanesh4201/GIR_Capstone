@@ -49,7 +49,6 @@ export class GirSearchComponent implements OnInit {
 
   runSearch() {
     if (this.selectedCorporate) {
-      alert(`Searching for: ${this.searchQuery}`);
       this.router.navigate(['/gir-cyto-graph'], { queryParams: { id: this.selectedCorporate.structure_Id, name: this.selectedCorporate.mneName } });
     } else {
       alert('Please enter a search term.');

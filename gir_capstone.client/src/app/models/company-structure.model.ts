@@ -11,6 +11,7 @@ export interface CorporateEntity {
 
 export interface Ownership {
   ownerEntityId: string;
+  ownerName: string;
   ownershipType: string;
   ownershipPercentage: number;
 }

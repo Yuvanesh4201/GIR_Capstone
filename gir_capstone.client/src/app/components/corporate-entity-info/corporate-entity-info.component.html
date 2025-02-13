@@ -21,11 +21,15 @@
 
   <div class="info-row">
     <label>Statuses:</label>
-    <span *ngFor="let status of corporateEntityInfo?.statuses">{{ status }}</span> <!-- Fixed display -->
+    <span *ngFor="let status of corporateEntityInfo?.statuses">{{ status }}</span>
+  </div>
+
+  <div class="info-row">
+    <label>Ownerships:</label>
+    <a href="#" (click)="onLinkClick($event)">Click for Ownership List</a>
   </div>
 
   <ng-template #NotExcluded>
-    <!-- Fixed template reference -->
     <span>No</span>
   </ng-template>
 </div>

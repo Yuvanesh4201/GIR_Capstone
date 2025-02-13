@@ -1,0 +1,85 @@
+.table-wrapper {
+  width: 80%; /* Adjust width */
+  max-width: 500px; /* Set max width */
+  height: auto; /* Adjust height */
+  max-height: 500px; /* Prevent table from overflowing */
+  overflow-y: auto; /* Enable vertical scrolling */
+  margin: 20px auto; /* Center the table */
+  padding: 10px;
+  background: white;
+  border-radius: 5px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999; /* Bring table in front */
+  top: 35%;
+  left: 50%;
+}
+.mat-mdc-header-cell {
+  font-size: 12px; /* Change header font size */
+  font-weight: 500;
+  color: #333;
+  text-transform: uppercase; /* Optional: Capitalize headers */
+  text-align: center;
+  border-right: 1px solid #ddd;
+}
+
+.mat-mdc-cell {
+  font-size: 10px; /* Change data row font size */
+  color: #555;
+  padding: 10px; /* Adjust spacing */
+  border-right: 1px solid #ddd; /* Adds column separation */
+  text-align: center;
+  font-weight: 400;
+}
+
+.mat-mdc-row {
+  height: 20px; /* Adjust row height */
+  border-bottom: 1px solid #ddd;
+}
+
+.mat-mdc-header-row {
+  height: 25px; /* Adjust header row height */
+}
+.mat-mdc-column-ownerName {
+  width: 30%; /* Adjust width for ownerName column */
+}
+
+.mat-mdc-column-ownedName {
+  width: 40%;
+}
+
+.mat-mdc-column-ownershipPercentage {
+  width: 30%;
+  text-align: center; /* Align percentage column */
+}
+.mat-mdc-column-ownerName {
+  width: 30%; /* Adjust width for ownerName column */
+}
+
+.mat-mdc-column-ownedName {
+  width: 40%;
+}
+
+.mat-mdc-column-ownershipPercentage {
+  width: 30%;
+  text-align: center; /* Align percentage column */
+}
+.mat-mdc-table {
+  border-collapse: collapse;
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.1); /* Light border */
+}
+
+.mat-mdc-row:nth-child(even) {
+  background-color: #f9f9f9; /* Zebra striping */
+}
+
+.table-title {
+  display: block;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
