@@ -65,6 +65,7 @@ public class CorporateRepository : ICorporateRepository
             Ownerships = e.Ownerships?.Select(o => new OwnershipDto
             {
                 OwnerEntityId = o.OwnerEntityId,
+                OwnerName = corporate.Entities.First(e => e.Id == o.OwnerEntityId).Name,
                 OwnershipType = o.OwnershipType,
                 OwnershipPercentage = o.OwnershipPercentage,
             }).ToList() ?? new List<OwnershipDto>(),

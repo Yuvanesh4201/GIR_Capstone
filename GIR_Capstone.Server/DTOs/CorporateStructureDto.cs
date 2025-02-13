@@ -13,6 +13,7 @@ public class CorporateEntityDto
 public class OwnershipDto
 {
     public Guid OwnerEntityId { get; set; }
+    public string OwnerName { get; set; } = String.Empty;
     public string OwnershipType { get; set; } = String.Empty;
     public decimal OwnershipPercentage { get; set; }
 }
