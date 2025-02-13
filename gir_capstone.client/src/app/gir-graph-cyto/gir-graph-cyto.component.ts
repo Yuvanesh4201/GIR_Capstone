@@ -23,11 +23,13 @@ export class GirGraphCytoComponent implements OnInit {
   showSelectedOwnershipList: boolean = false;
   cy: any;
   corporateId: any;
+  mneName: any;
   zoom: number = 1.5;
   constructor(private route: ActivatedRoute, private girService: GIRService) {}
 
   ngOnInit() {
     this.corporateId = this.route.snapshot.queryParamMap.get('id');
+    this.mneName = this.route.snapshot.queryParamMap.get('name');
 
     if (this.corporateId) {
       this.girService.getCorporateStructure(this.corporateId).subscribe(
@@ -56,7 +58,7 @@ export class GirGraphCytoComponent implements OnInit {
             id: node.id,
             label: node.name,
             entityInfo: node,
-            type: "child"
+            type: node.parentId ? "child" : "root",
           },
           grabbable: false,
         })),
@@ -78,25 +80,9 @@ export class GirGraphCytoComponent implements OnInit {
       layout: { name: 'breadthfirst' },
     })
 
-    const rootNode = {
-      data: {
-        id: corporateId ?? 'Blank',
-        label: this.route.snapshot.queryParamMap.get('name') ?? 'Blank',
-        type: "root"
-      }
-    };
-
     this.zoom = this.cy.zoom();
 
-    this.cy.add(rootNode);
-
-    this.corporateStructure.forEach(corp => {
-      if (corp.parentId == null)
-        this.cy.add({ data: { source: corporateId, target: corp.id } })
-    }
-    )
-
-    this.cy.on('tap', 'node[type="child"]', (event:any) => {
+    this.cy.on('tap', 'node', (event:any) => {
       const node = event.target;
       this.showSelectedCorporateEntityInfo = true;
       this.showSelectedOwnershipInfo = false;
@@ -124,7 +110,7 @@ export class GirGraphCytoComponent implements OnInit {
 
     this.cy.layout({
       name: 'breadthfirst',
-      roots: [corporateId],
+      roots: this.cy.nodes('[type="root"]').map((node: cytoscape.NodeSingular ) => node.id()),
       directed: true,
       spacingFactor: 1.5
     }).run();

@@ -1,6 +1,8 @@
 .info-box {
   display: flex;
   flex-direction: column;
+  top: 40px;
+  left: 10px;
   gap: 5px; /* Reduced gap for a more compact look */
   max-width: 200px; /* Slightly larger for better layout */
   padding: 12px 15px; /* Balanced inner spacing */

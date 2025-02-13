@@ -41,3 +41,11 @@
   right: 140px; /* Moves "Fit to Screen" button slightly to the left */
 }
 
+.title {
+  position: absolute;
+  top: 5px;
+  left: 10px;
+  font-size: 30px;
+  font-weight: 900;
+  z-index: 999;
+}

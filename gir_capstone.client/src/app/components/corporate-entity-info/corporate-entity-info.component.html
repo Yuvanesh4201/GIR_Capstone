@@ -15,12 +15,7 @@
   </div>
 
   <div class="info-row">
-    <label>Is Excluded:</label>
-    <span *ngIf="corporateEntityInfo?.is_Excluded; else NotExcluded">Yes</span>
-  </div>
-
-  <div class="info-row">
-    <label>Statuses:</label>
+    <label>Globe Statuses:</label>
     <span *ngFor="let status of corporateEntityInfo?.statuses">{{ status }}</span>
   </div>
 
@@ -28,8 +23,4 @@
     <label>Ownerships:</label>
     <a href="#" (click)="onLinkClick($event)">Click for Ownership List</a>
   </div>
-
-  <ng-template #NotExcluded>
-    <span>No</span>
-  </ng-template>
 </div>
