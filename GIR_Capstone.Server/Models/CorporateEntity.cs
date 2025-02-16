@@ -14,6 +14,7 @@ public class CorporateEntity
     public string Tin { get; set; } = string.Empty;
     public Guid? ParentId { get; set; }
     public bool Is_Excluded { get; set; }
+    public string? QIIR_Status { get; set; }  
 
 
     // Navigation Properties

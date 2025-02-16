@@ -8,6 +8,7 @@ public class CorporateEntityDto
     public bool Is_Excluded { get; set; }
     public List<string> Statuses { get; set; } = new List<string>();
     public List<OwnershipDto> Ownerships { get; set; } = new List<OwnershipDto>();
+    public string? qiir_Status { get; set; } = string.Empty;
 }
 
 public class OwnershipDto

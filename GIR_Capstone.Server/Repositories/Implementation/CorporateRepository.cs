@@ -69,6 +69,7 @@ public class CorporateRepository : ICorporateRepository
                 OwnershipType = o.OwnershipType,
                 OwnershipPercentage = o.OwnershipPercentage,
             }).ToList() ?? new List<OwnershipDto>(),
+            qiir_Status = e?.QIIR_Status,
         }).ToList() ?? new List<CorporateEntityDto>();
     }
 }
