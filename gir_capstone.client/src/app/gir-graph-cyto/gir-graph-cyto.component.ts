@@ -58,7 +58,7 @@ export class GirGraphCytoComponent implements OnInit {
             id: node.id,
             label: node.name,
             entityInfo: node,
-            type: node.parentId ? "child" : "root",
+            type: this.setNodeStyleType(node),
           },
           grabbable: false,
         })),
@@ -110,7 +110,7 @@ export class GirGraphCytoComponent implements OnInit {
 
     this.cy.layout({
       name: 'breadthfirst',
-      roots: this.cy.nodes('[type="root"]').map((node: cytoscape.NodeSingular ) => node.id()),
+      roots: this.cy.nodes('[type="UPE"]').map((node: cytoscape.NodeSingular ) => node.id()),
       directed: true,
       spacingFactor: 1.5
     }).run();
@@ -134,5 +134,31 @@ export class GirGraphCytoComponent implements OnInit {
     this.showSelectedCorporateEntityInfo = false;
     this.showSelectedOwnershipInfo = false;
     this.selectedOwnerships = ownerships;
+  }
+
+  applyEdgeStyle(event: any) {
+  
+    this.cy.edges().forEach((edge: cytoscape.EdgeSingular) => {
+      edge.style({
+        'curve-style': event.target.value,
+      });
+    });
+  }
+
+  setNodeStyleType(node: CorporateEntity): string {
+    if (node.parentId) {
+      switch (node.qiir_Status) {
+        case '901':
+          return 'POPE';
+        case '902':
+          return 'IPE';
+        case '903':
+          return ''
+        default:
+          return 'CE';
+      }
+    }
+
+    return 'UPE';
   }
 }

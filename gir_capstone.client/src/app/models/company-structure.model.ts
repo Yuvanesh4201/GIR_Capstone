@@ -7,6 +7,7 @@ export interface CorporateEntity {
   is_Excluded: boolean;
   statuses: string[];
   ownerships: Ownership[];
+  qiir_Status: string;
 }
 
 export interface Ownership {

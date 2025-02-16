@@ -3,7 +3,7 @@ import { Stylesheet } from 'cytoscape';
 export const girCytoGraphStyle: Stylesheet[] = [
   // 🌟 Node Styling (Minimalist & Elegant)
   {
-    selector: 'node',
+    selector: 'node[type="CE"]',
     style: {
       'background-color': '#b7d1e9', // Muted blue for a professional touch
       'label': 'data(label)',
@@ -25,11 +25,58 @@ export const girCytoGraphStyle: Stylesheet[] = [
   },
 
   {
-    selector: 'node[type="root"]',
+    selector: 'node[type="POPE"]',
+    style: {
+      'background-color': '#f4a261', // Muted blue for a professional touch
+      'label': 'data(label)',
+      'color': '#ffffff', // White text for contrast
+      'text-valign': 'center',
+      'text-halign': 'center',
+      'font-size': '8px', // Subtler text size for a cleaner look
+      'font-weight': 400, // Normal weight for better readability
+      'text-outline-width': 0.75,
+      'text-outline-color': '#3A6FB0', // Slight shadow effect for readability
+      'width': '52.5px', // Scalable size but not too large
+      'height': '20px',
+      'shape': 'round-rectangle',
+      'border-width': 1,
+      'border-color': '#3A6FB0', // Subtle border for sleekness
+      'transition-property': 'border-width, background-color',
+      'transition-duration': 0.15
+    }
+  },
+
+  {
+    selector: 'node[type="IPE"]',
+    style: {
+      'background-color': '#2a9d8f', // Muted blue for a professional touch
+      'label': 'data(label)',
+      'color': '#ffffff', // White text for contrast
+      'text-valign': 'center',
+      'text-halign': 'center',
+      'font-size': '8px', // Subtler text size for a cleaner look
+      'font-weight': 400, // Normal weight for better readability
+      'text-outline-width': 0.75,
+      'text-outline-color': '#3A6FB0', // Slight shadow effect for readability
+      'width': '52.5px', // Scalable size but not too large
+      'height': '20px',
+      'shape': 'round-rectangle',
+      'border-width': 1,
+      'border-color': '#3A6FB0', // Subtle border for sleekness
+      'transition-property': 'border-width, background-color',
+      'transition-duration': 0.15
+    }
+  },
+
+  {
+    selector: 'node[type="UPE"]',
     style: {
       'background-color': '#e9919c', // Unique red color for root
       'color': '#ffffff',
-      'font-size': '8px', // Slightly larger font for emphasis
+      'label': 'data(label)',
+      'text-valign': 'center',
+      'text-halign': 'center',
+      'font-size': '10px', // Slightly larger font for emphasis
       'width': '52.5px', // Larger size for root
       'height': '22px',
       'border-width': 1, // Thicker border for distinction
@@ -39,6 +86,7 @@ export const girCytoGraphStyle: Stylesheet[] = [
       'text-outline-color': '#A01725'
     }
   },
+
 
   // 🎯 Node Hover Effect (Subtle Highlight)
 /*  {

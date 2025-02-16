@@ -1,0 +1,15 @@
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-corporate-status-legend',
+  templateUrl: './corporate-status-legend.component.html',
+  styleUrl: './corporate-status-legend.component.css'
+})
+export class CorporateStatusLegendComponent {
+  legendItems = [
+    { type: 'UPE', label: 'Ultimate Parent Entity (UPE)', color: '#e9919c', border: '#A01725' },
+    { type: 'POPE', label: 'Parent-Owned Private Entity (POPE)', color: '#f4a261', border: '#c66b2b' },
+    { type: 'IPE', label: 'Independent Private Entity (IPE)', color: '#2a9d8f', border: '#1d7062' },
+    { type: 'CE', label: 'Corporate Entity (CE)', color: '#b7d1e9', border: '#3A6FB0' }
+  ];
+}

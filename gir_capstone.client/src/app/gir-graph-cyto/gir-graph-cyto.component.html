@@ -1,4 +1,18 @@
 <h1 class="title">{{ mneName }}</h1>
+<div class="radio-container">
+  <label>
+    <input type="radio" name="edgeStyle" value="bezier" (change)="applyEdgeStyle($event)" checked />
+    Bezier
+  </label>
+  <label>
+    <input type="radio" name="edgeStyle" value="unbundled-bezier" (change)="applyEdgeStyle($event)" />
+    Unbundled Bezier
+  </label>
+  <label>
+    <input type="radio" name="edgeStyle" value="segments" (change)="applyEdgeStyle($event)" />
+    Segements
+  </label>
+</div>
 <div class="cy-wrapper">
   <div #graph class="cy-container"></div>
 </div>
@@ -17,4 +31,5 @@
 </app-ownership-list>
 <button class="reset-button" (click)="resetLayout()">Reset Layout</button>
 <button class="fit-button" (click)="fitView()">Fit to Screen</button>
+<app-corporate-status-legend></app-corporate-status-legend>
 

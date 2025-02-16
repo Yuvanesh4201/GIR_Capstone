@@ -13,6 +13,7 @@ import { OwnershipInfoComponent } from './components/ownership-info/ownership-in
 import { OwnershipListComponent } from './components/ownership-list/ownership-list.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MatTableModule } from '@angular/material/table';
+import { CorporateStatusLegendComponent } from './components/corporate-status-legend/corporate-status-legend.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { MatTableModule } from '@angular/material/table';
     LoaderComponent,
     CorporateEntityInfoComponent,
     OwnershipInfoComponent,
-    OwnershipListComponent
+    OwnershipListComponent,
+    CorporateStatusLegendComponent
   ],
   imports: [
     BrowserModule,
