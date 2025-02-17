@@ -10,6 +10,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<EntityStatus> EntityStatuses { get; set; }
     public DbSet<CodeDecodeGlobeStatus> CodeDecodeGlobeStatus { get; set; }
     public DbSet<CodeDecodeOwnershipType> CodeDecodeOwnershipType { get; set; }
+    public DbSet<CorporateStructureXML> CorporateStructureXML { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
