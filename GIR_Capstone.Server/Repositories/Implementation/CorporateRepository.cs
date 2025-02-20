@@ -1,4 +1,5 @@
 using GIR_Capstone.Server.Helper;
+using GIR_Capstone.Server.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Xml;
 
@@ -11,14 +12,16 @@ public class CorporateRepository : ICorporateRepository
     /// Defines the _context
     /// </summary>
     private readonly ApplicationDbContext _context;
+    private readonly GlobeStatusDecoderService _globeDecoderService; 
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CorporateRepository"/> class.
     /// </summary>
     /// <param name="context">The context<see cref="ApplicationDbContext"/></param>
-    public CorporateRepository(ApplicationDbContext context)
+    public CorporateRepository(ApplicationDbContext context, GlobeStatusDecoderService globeDecoderService)
     {
         _context = context;
+        _globeDecoderService = globeDecoderService;
     }
 
     /// <summary>
@@ -63,7 +66,7 @@ public class CorporateRepository : ICorporateRepository
             Tin = e.Tin,
             ParentId = e.ParentId, // might need to go
             Is_Excluded = e.Is_Excluded,
-            Statuses = e.Statuses?.Select(s => s.Status).ToList() ?? new List<string>(),
+            Statuses = e.Statuses?.Select(s => _globeDecoderService.Decode(s.Status)).ToList() ?? new List<string>(),
             Ownerships = e.Ownerships?.Select(o => new OwnershipDto
             {
                 OwnerEntityId = o.OwnerEntityId,
