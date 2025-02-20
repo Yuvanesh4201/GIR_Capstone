@@ -27,7 +27,7 @@ public class ApplicationDbContext : DbContext
             .HasOne(o => o.OwnedEntity)
             .WithMany(e => e.Ownerships)
             .HasForeignKey(o => o.OwnedEntityId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<EntityOwnership>()
             .HasOne(o => o.OwnerEntity)

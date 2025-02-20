@@ -89,6 +89,16 @@ public class CorporateRepository : ICorporateRepository
         if (corporate == null)
             return false;
 
+        //DeletePreviousEntities (Temp)
+        var corporateEntites = await _context.CorporateEntities
+            .Where(x => x.CorporationId.ToString() == corporateId).ToListAsync();
+
+        if (corporateEntites.Any())
+        {
+            _context.RemoveRange(corporateEntites);
+            await _context.SaveChangesAsync();
+        }
+
         XmlReaderSettings settings = new XmlReaderSettings();
         settings.Async = true;
         settings.IgnoreWhitespace = true; // Ignore blank spaces

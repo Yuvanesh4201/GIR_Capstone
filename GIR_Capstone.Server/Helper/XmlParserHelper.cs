@@ -188,10 +188,12 @@ namespace GIR_Capstone.Server.Helper
             await reader.ReadAsync(); // skip parent node
 
             CorporateEntity corporateEntity = new CorporateEntity();
+            List<EntityStatus> statuses = new List<EntityStatus>();
+            List<EntityOwnership> ownerships = new List<EntityOwnership>();
+
             corporateEntity.Id = Guid.NewGuid(); // might need to add check
             corporateEntity.CorporationId = new Guid(corporateId);
-            corporateEntity.ParentId = Guid.NewGuid(); //Remove in the future, replace with IsCe true/false
-            List<EntityStatus> statuses = new List<EntityStatus>();
+            //corporateEntity.ParentId = ; //Remove in the future, replace with IsCe true/false
 
             while (await reader.ReadAsync())
             {
@@ -200,15 +202,15 @@ namespace GIR_Capstone.Server.Helper
                     switch (reader.Name)
                     {
                         case "ID":
-                            await ReadCEId(reader, corporateEntity, statuses);
+                            await ReadCEId(reader.ReadSubtree(), corporateEntity, statuses);
                             break;
                         case "OwnershipChange":
                             break;
                         case "Ownership":
-                            await ReadCEOwnership(reader, corporateEntity.Id, corporateId, _context);
+                            await ReadCEOwnership(reader.ReadSubtree(), ownerships, corporateEntity.Id, corporateId, _context, corporateEntity);
                             break;
                         case "QIIR":
-                            await ReadCEQiir(reader, corporateEntity);
+                            await ReadCEQiir(reader.ReadSubtree(), corporateEntity);
                             break;
                         case "QUTPR":
                             break;
@@ -217,82 +219,18 @@ namespace GIR_Capstone.Server.Helper
             }
 
             _context.CorporateEntities.Add(corporateEntity);
-            if (statuses.Count > 0)
-                _context.EntityStatuses.AddRange(statuses);
             await _context.SaveChangesAsync();
             Console.WriteLine($"CE Inserted: {corporateEntity.Id}");
-        }
 
-        /// <summary>
-        /// The ReadCEOwnership
-        /// </summary>
-        /// <param name="reader">The reader<see cref="XmlReader"/></param>
-        /// <param name="entityId">The entityId<see cref="Guid"/></param>
-        /// <param name="corporateId">The corporateId<see cref="string"/></param>
-        /// <param name="_context">The _context<see cref="ApplicationDbContext"/></param>
-        /// <returns>The <see cref="Task"/></returns>
-        private static async Task ReadCEOwnership(XmlReader reader, Guid entityId, string corporateId, ApplicationDbContext _context)
-        {
-            await reader.ReadAsync(); // skip parent node
+            if (ownerships.Count > 0)
+                _context.EntityOwnerships.AddRange(ownerships);
+            int ownershipsInserted = await _context.SaveChangesAsync();
+            Console.WriteLine($"Ownership Rows Inserted: {ownershipsInserted}");
 
-            EntityOwnership ownership = new EntityOwnership();
-            ownership.Id = Guid.NewGuid();
-            ownership.OwnedEntityId = entityId;
-
-            while (await reader.ReadAsync())
-            {
-                if (reader.NodeType == XmlNodeType.Element)
-                {
-                    string elementName = reader.Name;
-                    await reader.ReadAsync(); // Move inside the element
-                    if (reader.NodeType == XmlNodeType.Text)
-                    {
-                        switch (elementName)
-                        {
-                            case "OwnershipType":
-                                ownership.OwnershipType = reader.Value.Substring(3);
-                                break;
-                            case "TIN":
-                                var corporateEntity = await _context.CorporateEntities.FirstOrDefaultAsync(c => c.Tin == reader.Value && c.CorporationId.ToString() == corporateId);
-                                ownership.OwnerEntityId = corporateEntity.Id;
-                                break;
-                            case "OwnershipPercentage":
-                                ownership.OwnershipPercentage = Convert.ToDecimal(reader.Value);
-                                break;
-                        }
-                    }
-                }
-            }
-
-            _context.EntityOwnerships.Add(ownership);
-            await _context.SaveChangesAsync();
-            Console.WriteLine($"Ownership Row Inserted: {ownership.Id}");
-        }
-
-        /// <summary>
-        /// The ReadCEQiir
-        /// </summary>
-        /// <param name="reader">The reader<see cref="XmlReader"/></param>
-        /// <param name="corporateEntity">The corporateEntity<see cref="CorporateEntity"/></param>
-        /// <returns>The <see cref="Task"/></returns>
-        private static async Task ReadCEQiir(XmlReader reader, CorporateEntity corporateEntity)
-        {
-            await reader.ReadAsync(); // skip parent node
-
-            while (await reader.ReadAsync())
-            {
-                if (reader.NodeType == XmlNodeType.Element)
-                {
-                    switch (reader.Name)
-                    {
-                        case "POPE-IPE":
-                            corporateEntity.QIIR_Status = reader.ReadElementContentAsStringAsync().Result; // Might change depending on future requirements
-                            break;
-                        case "Exception":
-                            break;
-                    }
-                }
-            }
+            if (statuses.Count > 0)
+                _context.EntityStatuses.AddRange(statuses);
+            int rowsInserted = await _context.SaveChangesAsync();
+            Console.WriteLine($"EntityStatuses Inserted: {corporateEntity.Id} , Rows: {rowsInserted} ");
         }
 
         /// <summary>
@@ -332,6 +270,77 @@ namespace GIR_Capstone.Server.Helper
                                 statuses.Add(entityStatus);
                                 break;
                         }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// The ReadCEOwnership
+        /// </summary>
+        /// <param name="reader">The reader<see cref="XmlReader"/></param>
+        /// <param name="ownerships">The ownerships<see cref="List{EntityOwnership}"/></param>
+        /// <param name="entityId">The entityId<see cref="Guid"/></param>
+        /// <param name="corporateId">The corporateId<see cref="string"/></param>
+        /// <param name="_context">The _context<see cref="ApplicationDbContext"/></param>
+        /// <returns>The <see cref="Task"/></returns>
+        private static async Task ReadCEOwnership(XmlReader reader, List<EntityOwnership> ownerships, Guid entityId, string corporateId, ApplicationDbContext _context, CorporateEntity corporate)
+        {
+            await reader.ReadAsync(); // skip parent node
+
+            EntityOwnership ownership = new EntityOwnership();
+            ownership.Id = Guid.NewGuid();
+            ownership.OwnedEntityId = entityId;
+
+            while (await reader.ReadAsync())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    string elementName = reader.Name;
+                    await reader.ReadAsync(); // Move inside the element
+                    if (reader.NodeType == XmlNodeType.Text)
+                    {
+                        switch (elementName)
+                        {
+                            case "OwnershipType":
+                                ownership.OwnershipType = reader.Value.Substring(3);
+                                break;
+                            case "TIN":
+                                var corporateEntity = await _context.CorporateEntities.FirstOrDefaultAsync(c => c.Tin == reader.Value && c.CorporationId.ToString() == corporateId);
+                                ownership.OwnerEntityId = corporateEntity.Id;
+                                corporate.ParentId = corporateEntity.Id;
+                                break;
+                            case "OwnershipPercentage":
+                                ownership.OwnershipPercentage = Convert.ToDecimal(reader.Value);
+                                break;
+                        }
+                    }
+                }
+            }
+            ownerships.Add(ownership);
+        }
+
+        /// <summary>
+        /// The ReadCEQiir
+        /// </summary>
+        /// <param name="reader">The reader<see cref="XmlReader"/></param>
+        /// <param name="corporateEntity">The corporateEntity<see cref="CorporateEntity"/></param>
+        /// <returns>The <see cref="Task"/></returns>
+        private static async Task ReadCEQiir(XmlReader reader, CorporateEntity corporateEntity)
+        {
+            await reader.ReadAsync(); // skip parent node
+
+            while (await reader.ReadAsync())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    switch (reader.Name)
+                    {
+                        case "POPE-IPE":
+                            corporateEntity.QIIR_Status = reader.ReadElementContentAsStringAsync().Result; // Might change depending on future requirements
+                            break;
+                        case "Exception":
+                            break;
                     }
                 }
             }
