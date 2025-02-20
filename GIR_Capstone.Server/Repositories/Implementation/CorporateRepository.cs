@@ -1,4 +1,6 @@
+using GIR_Capstone.Server.Helper;
 using Microsoft.EntityFrameworkCore;
+using System.Xml;
 
 /// <summary>
 /// Defines the <see cref="CorporateRepository" />
@@ -71,5 +73,53 @@ public class CorporateRepository : ICorporateRepository
             }).ToList() ?? new List<OwnershipDto>(),
             qiir_Status = e?.QIIR_Status,
         }).ToList() ?? new List<CorporateEntityDto>();
+    }
+
+    /// <summary>
+    /// The BatchUpdateCorporateStructureAsync
+    /// </summary>
+    /// <param name="corporateId">The corporateId<see cref="string"/></param>
+    /// <returns>The <see cref="Task{bool}"/></returns>
+    public async Task<bool> BatchUpdateCorporateStructureAsync(string corporateId)
+    {
+        var corporate = await _context.CorporateStructureXML
+            .OrderByDescending(x => x.DateTimeCreated)  // Sort in descending order
+            .FirstOrDefaultAsync(x => x.StructureId.ToString() == corporateId);
+
+        if (corporate == null)
+            return false;
+
+        XmlReaderSettings settings = new XmlReaderSettings();
+        settings.Async = true;
+        settings.IgnoreWhitespace = true; // Ignore blank spaces
+        settings.IgnoreComments = true;    // Ignore XML comments
+
+        using (StringReader stringReader = new StringReader(corporate.XmlData))
+        using (XmlReader reader = XmlReader.Create(stringReader, settings))
+        {
+            if (reader != null)
+            {
+                while (await reader.ReadAsync())
+                {
+                    if (reader.NodeType == XmlNodeType.Element)
+                    {
+                        switch (reader.Name)
+                        {
+                            case "FilingCE":
+                                await XmlParserHelper.ReadFilingCE(reader.ReadSubtree()); //Test
+                                break;
+                            case "CorporateStructure":
+                                await XmlParserHelper.ReadCorporateStructure(reader.ReadSubtree(), corporateId, _context);
+                                break;
+                        }
+                    }
+                }
+            }
+            else
+                return false;
+
+        }
+
+        return true;
     }
 }

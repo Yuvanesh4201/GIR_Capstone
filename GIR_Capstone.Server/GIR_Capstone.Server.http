@@ -1,5 +1,8 @@
 @GIR_Capstone.Server_HostAddress = http://localhost:5010
 
+POST {{GIR_Capstone.Server_HostAddress}}/api/GIR/BatchCorporateStructure/B07D308E-662C-495C-9D1C-5C9AA45E2AF7
+Accept: application/json
+
 GET {{GIR_Capstone.Server_HostAddress}}/weatherforecast/
 Accept: application/json
 

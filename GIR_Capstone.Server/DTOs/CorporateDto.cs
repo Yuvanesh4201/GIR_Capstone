@@ -4,3 +4,8 @@ public class CorporateDto
     public string MNEName { get; set; } = string.Empty;
 
 }
+
+public class CorporateRequestModel
+{
+   public string CorporateId { get; set; }
+}

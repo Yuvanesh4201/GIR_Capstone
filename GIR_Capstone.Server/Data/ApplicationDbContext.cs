@@ -39,6 +39,16 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<EntityStatus>()
             .HasKey(es => new { es.EntityId, es.Status });
 
+        modelBuilder.Entity<CorporateStructureXML>()
+            .HasOne(c => c.Corporate)
+            .WithMany()
+            .HasForeignKey(c => c.StructureId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<CorporateStructureXML>()
+            .Property(c => c.DateTimeCreated)
+            .HasDefaultValueSql("SYSDATETIMEOFFSET()");
+
         base.OnModelCreating(modelBuilder);
     }
 }

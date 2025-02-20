@@ -6,7 +6,8 @@ public class CorporateStructureXML
     [Key]
     public Guid Id { get; set; }
     [ForeignKey("Corporate")]
-    public Guid StructureId { get; set; } 
+    public Guid StructureId { get; set; }
+    [Column(TypeName = "XML")]
     public string XmlData { get; set; } = string.Empty;
     public DateTimeOffset DateTimeCreated { get; set; } = DateTimeOffset.UtcNow;
     
