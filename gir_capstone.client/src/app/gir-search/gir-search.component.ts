@@ -54,4 +54,11 @@ export class GirSearchComponent implements OnInit {
       alert('Please enter a search term.');
     }
   }
+
+  runBatch() {
+    if (this.selectedCorporate) {
+      if (this.selectedCorporate.mneName == 'Sample Corporation Ltd') //Temp Check
+        this.girService.batchCorporateXml(this.selectedCorporate.structure_Id);
+    }
+  }
 }

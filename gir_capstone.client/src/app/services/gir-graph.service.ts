@@ -1,7 +1,7 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
-import { Corporate } from "../models/corporate.model";
+import { catchError, Observable, tap, throwError } from "rxjs";
+import { BatchCorporateRequestDto, Corporate } from "../models/corporate.model";
 import { CorporateEntity } from "../models/company-structure.model";
 
 @Injectable(
@@ -19,6 +19,19 @@ export class GIRService {
 
   getCorporateStructure(corporateId: string): Observable<CorporateEntity[]> {
     return this.http.get<CorporateEntity[]>(`/api/GIR/RetrieveCorporateStructure/${corporateId}`);
+  }
+
+  batchCorporateXml(corporateId: string) {
+
+    const body: BatchCorporateRequestDto = { corporateId: corporateId };
+    const headers = new HttpHeaders({ "Content-Type": "application/json" });
+    const url = `/api/GIR/BatchCorporateStructure`;
+
+   this.http.post(url, body, { headers }).subscribe(
+      response => console.log('Success:', response),
+      error => console.error('Error:', error)
+    );
+
   }
 
 }
