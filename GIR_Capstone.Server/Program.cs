@@ -18,6 +18,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<ICorporateRepository, CorporateRepository>();
 builder.Services.AddSingleton<GlobeStatusDecoderService>();
+builder.Services.AddSingleton<OwnershipTypeDecoderService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -28,8 +29,11 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var decoderService = scope.ServiceProvider.GetRequiredService<GlobeStatusDecoderService>();
-    await decoderService.LoadStatusMappingsAsync();
+    var globeStatusDecoderService = scope.ServiceProvider.GetRequiredService<GlobeStatusDecoderService>();
+    await globeStatusDecoderService.LoadStatusMappingsAsync();
+    
+    var ownershipTypeDecoderService = scope.ServiceProvider.GetRequiredService<OwnershipTypeDecoderService>();
+    await ownershipTypeDecoderService.LoadStatusMappingsAsync();
 }
 
 app.UseDefaultFiles();

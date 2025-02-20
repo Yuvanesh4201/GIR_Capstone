@@ -13,15 +13,17 @@ public class CorporateRepository : ICorporateRepository
     /// </summary>
     private readonly ApplicationDbContext _context;
     private readonly GlobeStatusDecoderService _globeDecoderService; 
+    private readonly OwnershipTypeDecoderService _ownershipTypeDecoderService; 
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CorporateRepository"/> class.
     /// </summary>
     /// <param name="context">The context<see cref="ApplicationDbContext"/></param>
-    public CorporateRepository(ApplicationDbContext context, GlobeStatusDecoderService globeDecoderService)
+    public CorporateRepository(ApplicationDbContext context, GlobeStatusDecoderService globeDecoderService, OwnershipTypeDecoderService ownershipTypeDecoderService)
     {
         _context = context;
         _globeDecoderService = globeDecoderService;
+        _ownershipTypeDecoderService = ownershipTypeDecoderService;
     }
 
     /// <summary>
@@ -71,7 +73,7 @@ public class CorporateRepository : ICorporateRepository
             {
                 OwnerEntityId = o.OwnerEntityId,
                 OwnerName = corporate.Entities.First(e => e.Id == o.OwnerEntityId).Name,
-                OwnershipType = o.OwnershipType,
+                OwnershipType = _ownershipTypeDecoderService.Decode(o.OwnershipType),
                 OwnershipPercentage = o.OwnershipPercentage,
             }).ToList() ?? new List<OwnershipDto>(),
             qiir_Status = e?.QIIR_Status,
