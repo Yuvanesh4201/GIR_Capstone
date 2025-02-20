@@ -64,3 +64,40 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
   border-color: #bbb;
 }
+
+/* Ensures Globe Statuses row aligns with other fields */
+.info-row-status {
+  display: flex;
+  align-items: center; /* Keep label and content aligned */
+  padding: 2px 0;
+}
+
+  /* Keeps label width consistent with other labels */
+  .info-row-status label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+    flex: 1;
+    text-align: left; /* Ensure label stays aligned */
+  }
+
+/* Ensures the status values align properly */
+.status-list {
+  flex: 2; /* Matches other fields' spacing */
+  display: flex;
+  flex-direction: column; /* Stack statuses vertically */
+  gap: 2px; /* Slight spacing between statuses */
+}
+
+/* Improves readability and keeps formatting aligned */
+.status-item {
+  font-size: 10px;
+  font-weight: 500;
+  color: #333;
+  padding: 2px 6px;
+  text-align: center; /* Ensures text is aligned properly */
+}
+
+
+

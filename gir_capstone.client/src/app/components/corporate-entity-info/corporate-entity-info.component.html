@@ -14,10 +14,15 @@
     <span>{{ corporateEntityInfo?.tin }}</span>
   </div>
 
-  <div *ngIf="corporateEntityInfo.statuses.length" class="info-row">
+  <div *ngIf="corporateEntityInfo.statuses.length" class="info-row-status">
     <label>Globe Statuses:</label>
-    <span *ngFor="let status of corporateEntityInfo?.statuses">{{ status }}</span>
+    <div class="status-list">
+      <span *ngFor="let status of corporateEntityInfo?.statuses" class="status-item">
+        {{ status }}
+      </span>
+    </div>
   </div>
+
 
   <div *ngIf="corporateEntityInfo.ownerships.length" class="info-row">
     <label>Ownerships:</label>
