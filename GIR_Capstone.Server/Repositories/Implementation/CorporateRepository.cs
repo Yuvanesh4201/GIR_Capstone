@@ -1,6 +1,7 @@
 using GIR_Capstone.Server.Helper;
 using GIR_Capstone.Server.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.Xml;
 
 /// <summary>
@@ -12,13 +13,23 @@ public class CorporateRepository : ICorporateRepository
     /// Defines the _context
     /// </summary>
     private readonly ApplicationDbContext _context;
-    private readonly GlobeStatusDecoderService _globeDecoderService; 
-    private readonly OwnershipTypeDecoderService _ownershipTypeDecoderService; 
+
+    /// <summary>
+    /// Defines the _globeDecoderService
+    /// </summary>
+    private readonly GlobeStatusDecoderService _globeDecoderService;
+
+    /// <summary>
+    /// Defines the _ownershipTypeDecoderService
+    /// </summary>
+    private readonly OwnershipTypeDecoderService _ownershipTypeDecoderService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CorporateRepository"/> class.
     /// </summary>
     /// <param name="context">The context<see cref="ApplicationDbContext"/></param>
+    /// <param name="globeDecoderService">The globeDecoderService<see cref="GlobeStatusDecoderService"/></param>
+    /// <param name="ownershipTypeDecoderService">The ownershipTypeDecoderService<see cref="OwnershipTypeDecoderService"/></param>
     public CorporateRepository(ApplicationDbContext context, GlobeStatusDecoderService globeDecoderService, OwnershipTypeDecoderService ownershipTypeDecoderService)
     {
         _context = context;
@@ -87,6 +98,11 @@ public class CorporateRepository : ICorporateRepository
     /// <returns>The <see cref="Task{bool}"/></returns>
     public async Task<bool> BatchUpdateCorporateStructureAsync(string corporateId)
     {
+        //Benchmarking Purposes
+        long readAsyncTime = 0;
+        long readToFollowingTime = 0;
+        Stopwatch stopwatch = new Stopwatch();
+
         var corporate = await _context.CorporateStructureXML
             .OrderByDescending(x => x.DateTimeCreated)  // Sort in descending order
             .FirstOrDefaultAsync(x => x.StructureId.ToString() == corporateId);
@@ -108,32 +124,67 @@ public class CorporateRepository : ICorporateRepository
         settings.Async = true;
         settings.IgnoreWhitespace = true; // Ignore blank spaces
         settings.IgnoreComments = true;    // Ignore XML comments
+        settings.DtdProcessing = DtdProcessing.Ignore;
+        settings.ConformanceLevel = ConformanceLevel.Document;
+
+        /*        using (StringReader stringReader = new StringReader(corporate.XmlData))
+                using (XmlReader reader = XmlReader.Create(stringReader, settings))
+                {
+                    if (reader != null)
+                    {
+                        stopwatch.Start();
+
+                        while (await reader.ReadAsync())
+                        {
+                            bool endLoop = false;
+
+                            if (reader.NodeType == XmlNodeType.Element)
+                            {
+                                switch (reader.Name)
+                                {
+                                    case "FilingCE":
+                                        await XmlParserHelper.ReadFilingCE(reader.ReadSubtree()); //Test
+                                        break;
+                                    case "CorporateStructure":
+                                        await XmlParserHelper.ReadCorporateStructure(reader.ReadSubtree(), corporateId, _context);
+                                        endLoop = true;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                            if (endLoop)
+                                break;
+                        }
+
+                        stopwatch.Stop();
+                        readAsyncTime = stopwatch.ElapsedMilliseconds;
+                    }
+                    else
+                        return false;
+                }
+
+                stopwatch.Reset();*/
 
         using (StringReader stringReader = new StringReader(corporate.XmlData))
         using (XmlReader reader = XmlReader.Create(stringReader, settings))
         {
             if (reader != null)
             {
-                while (await reader.ReadAsync())
-                {
-                    if (reader.NodeType == XmlNodeType.Element)
-                    {
-                        switch (reader.Name)
-                        {
-                            case "FilingCE":
-                                await XmlParserHelper.ReadFilingCE(reader.ReadSubtree()); //Test
-                                break;
-                            case "CorporateStructure":
-                                await XmlParserHelper.ReadCorporateStructure(reader.ReadSubtree(), corporateId, _context);
-                                break;
-                        }
-                    }
-                }
+                stopwatch.Start();
+
+                if (reader.ReadToFollowing("CorporateStructure"))
+                    await XmlParserHelper.ReadCorporateStructure(reader.ReadSubtree(), corporateId, _context);
+
+                stopwatch.Stop();
+                readToFollowingTime = stopwatch.ElapsedMilliseconds;
             }
             else
                 return false;
-
         }
+
+        //Console.WriteLine($"ReadAsync Execution Time: {readAsyncTime} ms");
+        Console.WriteLine($"ReadToFollowing Execution Time: {readToFollowingTime} ms");
 
         return true;
     }

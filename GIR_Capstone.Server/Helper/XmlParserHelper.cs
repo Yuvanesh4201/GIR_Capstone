@@ -29,15 +29,12 @@ namespace GIR_Capstone.Server.Helper
                         {
                             case "TIN":
                                 string tin = reader.Value;
-                                Console.WriteLine(tin);
                                 break;
                             case "ResCountryCode":
                                 string code = reader.Value;
-                                Console.WriteLine(code);
                                 break;
                             case "Name":
                                 string name = reader.Value;
-                                Console.WriteLine(name);
                                 break;
                         }
                     }
@@ -57,6 +54,7 @@ namespace GIR_Capstone.Server.Helper
         {
             await reader.ReadAsync(); // skip parent node
 
+            //Order Independent
             while (await reader.ReadAsync())
             {
                 if (reader.NodeType == XmlNodeType.Element)
@@ -74,6 +72,22 @@ namespace GIR_Capstone.Server.Helper
                     }
                 }
             }
+
+            //Possible Optimzation (Order Dependent) 
+            /*            while (true)
+                        {
+
+                            if (reader.ReadToFollowing("UPE"))
+                            {
+                                await ReadUPE(reader.ReadSubtree(), corporateId, _context);
+                            }
+                            if (reader.ReadToFollowing("CE"))
+                            {
+                                await ReadCE(reader.ReadSubtree(), corporateId, _context);
+                            }
+                            else
+                                break;
+                        }*/
         }
 
         /// <summary>
@@ -87,6 +101,7 @@ namespace GIR_Capstone.Server.Helper
         {
             await reader.ReadAsync(); // skip parent node
 
+            //Order Independent
             while (await reader.ReadAsync())
             {
                 if (reader.NodeType == XmlNodeType.Element)
@@ -101,6 +116,22 @@ namespace GIR_Capstone.Server.Helper
                     }
                 }
             }
+
+            //Possible Optimzation (Order Dependent) 
+            /*while (true)
+            {
+
+                if (reader.ReadToFollowing("OtherUPE"))
+                {
+                    await ReadOtherUPE(reader.ReadSubtree(), corporateId, _context);
+                }
+                if (reader.ReadToFollowing("ExcludedUPE"))
+                {
+                    continue;
+                }
+                else
+                    break;
+            }*/
         }
 
         /// <summary>
