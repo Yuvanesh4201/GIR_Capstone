@@ -57,7 +57,7 @@ public class CorporateRepository : ICorporateRepository
     /// </summary>
     /// <param name="corporateId">The corporateId<see cref="string"/></param>
     /// <returns>The <see cref="Task{List{CorporateEntityDto}}"/></returns>
-    public async Task<List<CorporateEntityDto>> GetCorporateStructureAsync(string corporateId)
+    public async Task<List<CorporateEntityDto>> GetCorporateStructureDbAsync(string corporateId)
     {
         var corporate = await _context.Corporates!
             .Include(c => c.Entities)!
@@ -75,7 +75,7 @@ public class CorporateRepository : ICorporateRepository
         {
             Id = e.Id,
             Name = e.Name,
-            Jusridiction = e.Jurisdiction,
+            Jurisdiction = e.Jurisdiction,
             Tin = e.Tin,
             ParentId = e.ParentId, // might need to go
             Is_Excluded = e.Is_Excluded,
@@ -91,6 +91,41 @@ public class CorporateRepository : ICorporateRepository
         }).ToList() ?? new List<CorporateEntityDto>();
     }
 
+    public async Task<List<CorporateEntityDto>> GetCorporateStructureXmlAsync(string corporateId)
+    {
+        var corporate = await _context.CorporateStructureXML
+            .OrderByDescending(x => x.DateTimeCreated)  // Sort in descending order
+            .FirstOrDefaultAsync(x => x.StructureId == new Guid(corporateId));
+
+        if (corporate == null)
+            return null!;
+
+        var corporateEntites = await _context.CorporateEntities
+            .Where(x => x.CorporationId == new Guid(corporateId)).ExecuteDeleteAsync();
+
+
+        XmlReaderSettings settings = new XmlReaderSettings();
+        settings.Async = true;
+        settings.IgnoreWhitespace = true; // Ignore blank spaces
+        settings.IgnoreComments = true;    // Ignore XML comments
+        settings.DtdProcessing = DtdProcessing.Ignore;
+        settings.ConformanceLevel = ConformanceLevel.Document;
+
+        string xmlContent = corporate.XmlData;
+
+        using (StringReader stringReader = new StringReader(xmlContent))
+        using (XmlReader reader = XmlReader.Create(stringReader, settings))
+        {
+            if (reader != null)
+            {
+                if (reader.ReadToFollowing("CorporateStructure"))
+                    return await XmlParserHelper.GetCorporateStructure(reader.ReadSubtree());
+            }
+        }
+
+        return null!;
+    }
+
     /// <summary>
     /// The BatchUpdateCorporateStructureAsync
     /// </summary>
@@ -99,26 +134,20 @@ public class CorporateRepository : ICorporateRepository
     public async Task<bool> BatchUpdateCorporateStructureAsync(string corporateId)
     {
         //Benchmarking Purposes
-        long readAsyncTime = 0;
+        //long readAsyncTime = 0;
         long readToFollowingTime = 0;
         Stopwatch stopwatch = new Stopwatch();
 
         var corporate = await _context.CorporateStructureXML
             .OrderByDescending(x => x.DateTimeCreated)  // Sort in descending order
-            .FirstOrDefaultAsync(x => x.StructureId.ToString() == corporateId);
+            .FirstOrDefaultAsync(x => x.StructureId == new Guid(corporateId));
 
         if (corporate == null)
             return false;
 
         //DeletePreviousEntities (Temp)
         var corporateEntites = await _context.CorporateEntities
-            .Where(x => x.CorporationId.ToString() == corporateId).ToListAsync();
-
-        if (corporateEntites.Any())
-        {
-            _context.RemoveRange(corporateEntites);
-            await _context.SaveChangesAsync();
-        }
+            .Where(x => x.CorporationId == new Guid(corporateId)).ExecuteDeleteAsync();
 
         XmlReaderSettings settings = new XmlReaderSettings();
         settings.Async = true;
@@ -126,6 +155,8 @@ public class CorporateRepository : ICorporateRepository
         settings.IgnoreComments = true;    // Ignore XML comments
         settings.DtdProcessing = DtdProcessing.Ignore;
         settings.ConformanceLevel = ConformanceLevel.Document;
+
+        string xmlContent = corporate.XmlData;
 
         /*        using (StringReader stringReader = new StringReader(corporate.XmlData))
                 using (XmlReader reader = XmlReader.Create(stringReader, settings))
@@ -166,7 +197,7 @@ public class CorporateRepository : ICorporateRepository
 
                 stopwatch.Reset();*/
 
-        using (StringReader stringReader = new StringReader(corporate.XmlData))
+        using (StringReader stringReader = new StringReader(xmlContent))
         using (XmlReader reader = XmlReader.Create(stringReader, settings))
         {
             if (reader != null)
@@ -188,4 +219,6 @@ public class CorporateRepository : ICorporateRepository
 
         return true;
     }
+
+
 }

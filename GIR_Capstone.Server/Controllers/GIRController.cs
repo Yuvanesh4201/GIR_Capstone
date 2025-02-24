@@ -21,13 +21,19 @@ namespace GIR_Capstone.Server.Controllers
             return Ok(corporates);
         }
         
-        [HttpGet("RetrieveCorporateStructure/{corporateId}")]
-        public async Task<IActionResult> RetrieveCorporateStructure(string corporateId)
+        [HttpGet("RetrieveCorporateStructure/{corporateId}/{xmlParse?}")]
+        public async Task<IActionResult> RetrieveCorporateStructure(string corporateId, bool xmlParse = false)
         {
-            List<CorporateEntityDto> corporateStructure = await _userRepository.GetCorporateStructureAsync(corporateId);
+            if(xmlParse)
+            {
+                List<CorporateEntityDto> corporateStructureXml = await _userRepository.GetCorporateStructureXmlAsync(corporateId);
+                return Ok(corporateStructureXml);
+            }
+
+            List<CorporateEntityDto> corporateStructure = await _userRepository.GetCorporateStructureDbAsync(corporateId);
             return Ok(corporateStructure);
         }
-
+        
         [HttpPost("BatchCorporateStructure")]
         public async Task<IActionResult> BatchCorporateStructure([FromBody] CorporateRequestModel corporate)
         {
