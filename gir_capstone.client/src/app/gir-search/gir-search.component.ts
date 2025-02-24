@@ -47,9 +47,17 @@ export class GirSearchComponent implements OnInit {
     this.isDropdownOpen = !this.isDropdownOpen;
   }
 
-  runSearch() {
+  runDbSearch() {
     if (this.selectedCorporate) {
-      this.router.navigate(['/gir-cyto-graph'], { queryParams: { id: this.selectedCorporate.structure_Id, name: this.selectedCorporate.mneName } });
+      this.router.navigate(['/gir-cyto-graph'], { queryParams: { id: this.selectedCorporate.structure_Id, name: this.selectedCorporate.mneName, xmlParse: false } });
+    } else {
+      alert('Please enter a search term.');
+    }
+  }
+
+  runXmlSearch() {
+    if (this.selectedCorporate) {
+      this.router.navigate(['/gir-cyto-graph'], { queryParams: { id: this.selectedCorporate.structure_Id, name: this.selectedCorporate.mneName, xmlParse: true } });
     } else {
       alert('Please enter a search term.');
     }

@@ -1,7 +1,7 @@
 export interface CorporateEntity {
   id: string;
   name: string;
-  jusridiction: string;
+  jurisdiction: string;
   tin: string;
   parentId: string;
   is_Excluded: boolean;

@@ -24,15 +24,17 @@ export class GirGraphCytoComponent implements OnInit {
   cy: any;
   corporateId: any;
   mneName: any;
+  xmlParse: any;
   zoom: number = 1.5;
   constructor(private route: ActivatedRoute, private girService: GIRService) {}
 
   ngOnInit() {
     this.corporateId = this.route.snapshot.queryParamMap.get('id');
     this.mneName = this.route.snapshot.queryParamMap.get('name');
+    this.xmlParse = this.route.snapshot.queryParamMap.get('xmlParse');
 
     if (this.corporateId) {
-      this.girService.getCorporateStructure(this.corporateId).subscribe(
+      this.girService.getCorporateStructure(this.corporateId, this.xmlParse).subscribe(
         (data) => {
           if (data) {
             console.log('Corporate ID Works:', this.corporateId);

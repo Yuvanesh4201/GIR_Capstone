@@ -8,8 +8,11 @@
              (focus)="isDropdownOpen = true"
              class="custom-search-input"
              placeholder="Search..." />
-      <button (click)="runSearch()" class="custom-search-button">
-        Search
+      <button (click)="runDbSearch()" class="custom-search-button">
+        DB
+      </button>
+      <button (click)="runXmlSearch()" class="custom-search-button">
+        Xml
       </button>
       <button (click)="runBatch()" class="custom-search-button">
         Batch

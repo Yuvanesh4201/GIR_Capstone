@@ -17,8 +17,8 @@ export class GIRService {
     return this.http.get<Corporate[]>(`/api/GIR/RetrieveCorporates`);
   }
 
-  getCorporateStructure(corporateId: string): Observable<CorporateEntity[]> {
-    return this.http.get<CorporateEntity[]>(`/api/GIR/RetrieveCorporateStructure/${corporateId}`);
+  getCorporateStructure(corporateId: string, xmlParse: boolean): Observable<CorporateEntity[]> {
+    return this.http.get<CorporateEntity[]>(`/api/GIR/RetrieveCorporateStructure/${corporateId}/${xmlParse}`);
   }
 
   batchCorporateXml(corporateId: string) {
