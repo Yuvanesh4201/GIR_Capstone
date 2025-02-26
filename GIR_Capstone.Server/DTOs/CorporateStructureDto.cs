@@ -14,6 +14,9 @@ public class CorporateEntityDto
 
 public class OwnershipDto
 {
+    //Maybe Create an Id for internal use (Unordered Scenario)
+    public Guid Id { get; set; }  
+    public Guid OwnedEntityId { get; set; }
     public Guid OwnerEntityId { get; set; }
     public string OwnerName { get; set; } = String.Empty;
     public string OwnershipType { get; set; } = String.Empty;

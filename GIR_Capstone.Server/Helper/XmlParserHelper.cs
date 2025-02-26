@@ -1,7 +1,6 @@
 namespace GIR_Capstone.Server.Helper
 {
     using Microsoft.EntityFrameworkCore;
-    using System.Reflection.PortableExecutable;
     using System.Xml;
 
     /// <summary>
@@ -23,8 +22,8 @@ namespace GIR_Capstone.Server.Helper
                 if (reader.NodeType == XmlNodeType.Element)
                 {
                     string elementName = reader.Name;
-                    await reader.ReadAsync(); // Move inside the element
-                    if (reader.NodeType == XmlNodeType.Text)
+                    
+                    if (await reader.ReadAsync() && reader.NodeType == XmlNodeType.Text)
                     {
                         switch (elementName)
                         {
@@ -44,8 +43,6 @@ namespace GIR_Capstone.Server.Helper
             }
         }
 
-
-        #region BatchToDb
         /// <summary>
         /// The ReadCorporateStructure
         /// </summary>
@@ -55,6 +52,8 @@ namespace GIR_Capstone.Server.Helper
         /// <returns>The <see cref="Task"/></returns>
         public static async Task ReadCorporateStructure(XmlReader reader, string corporateId, ApplicationDbContext _context)
         {
+            Dictionary<string, EntityOwnership> missingOwnerships = new Dictionary<string, EntityOwnership>();
+
             await reader.ReadAsync(); // skip parent node
 
             //Order Independent
@@ -68,11 +67,26 @@ namespace GIR_Capstone.Server.Helper
                             await ReadUPE(reader.ReadSubtree(), corporateId, _context);
                             break;
                         case "CE":
-                            await ReadCE(reader.ReadSubtree(), corporateId, _context);
+                            await ReadCE(reader.ReadSubtree(), corporateId, missingOwnerships, _context);
                             break;
                         case "ExcludedEntity":
                             break;
                     }
+                }
+            }
+
+            if (missingOwnerships.Count > 0)
+            {
+                foreach (var ownership in missingOwnerships)
+                {
+                    var entity = _context.CorporateEntities.FirstOrDefaultAsync(c => c.Tin == ownership.Key && c.CorporationId.ToString() == corporateId);
+                    ownership.Value.OwnerEntityId = entity.Result.Id;
+                    _context.EntityOwnerships.Add(ownership.Value);
+
+                    var ownedEntity = _context.CorporateEntities.FirstOrDefault(c => c.Id == ownership.Value.OwnedEntityId);
+                    ownedEntity.ParentId = entity.Result.Id; //temp
+                    _context.CorporateEntities.Update(ownedEntity); //temp (bad code)
+
                 }
             }
         }
@@ -146,8 +160,8 @@ namespace GIR_Capstone.Server.Helper
                 if (reader.NodeType == XmlNodeType.Element)
                 {
                     string elementName = reader.Name;
-                    await reader.ReadAsync(); // Move inside the element
-                    if (reader.NodeType == XmlNodeType.Text)
+
+                    if (await reader.ReadAsync() && reader.NodeType == XmlNodeType.Text)
                     {
                         switch (elementName)
                         {
@@ -183,9 +197,10 @@ namespace GIR_Capstone.Server.Helper
         /// </summary>
         /// <param name="reader">The reader<see cref="XmlReader"/></param>
         /// <param name="corporateId">The corporateId<see cref="string"/></param>
+        /// <param name="missingOwnerships">The missingOwnerships<see cref="Dictionary{string, EntityOwnership}"/></param>
         /// <param name="_context">The _context<see cref="ApplicationDbContext"/></param>
         /// <returns>The <see cref="Task"/></returns>
-        private static async Task ReadCE(XmlReader reader, string corporateId, ApplicationDbContext _context)
+        private static async Task ReadCE(XmlReader reader, string corporateId, Dictionary<string, EntityOwnership> missingOwnerships, ApplicationDbContext _context)
         {
             await reader.ReadAsync(); // skip parent node
 
@@ -209,7 +224,7 @@ namespace GIR_Capstone.Server.Helper
                         case "OwnershipChange":
                             break;
                         case "Ownership":
-                            await ReadCEOwnership(reader.ReadSubtree(), ownerships, corporateEntity.Id, corporateId, _context, corporateEntity);
+                            await ReadCEOwnership(reader.ReadSubtree(), ownerships, corporateEntity.Id, corporateId, _context, corporateEntity, missingOwnerships);
                             break;
                         case "QIIR":
                             await ReadCEQiir(reader.ReadSubtree(), corporateEntity);
@@ -251,8 +266,8 @@ namespace GIR_Capstone.Server.Helper
                 if (reader.NodeType == XmlNodeType.Element)
                 {
                     string elementName = reader.Name;
-                    await reader.ReadAsync(); // Move inside the element
-                    if (reader.NodeType == XmlNodeType.Text)
+
+                    if (await reader.ReadAsync() && reader.NodeType == XmlNodeType.Text)
                     {
                         switch (elementName)
                         {
@@ -286,22 +301,24 @@ namespace GIR_Capstone.Server.Helper
         /// <param name="corporateId">The corporateId<see cref="string"/></param>
         /// <param name="_context">The _context<see cref="ApplicationDbContext"/></param>
         /// <param name="corporate">The corporate<see cref="CorporateEntity"/></param>
+        /// <param name="missingOwnerships">The missingOwnerships<see cref="Dictionary{string, EntityOwnership}"/></param>
         /// <returns>The <see cref="Task"/></returns>
-        private static async Task ReadCEOwnership(XmlReader reader, List<EntityOwnership> ownerships, Guid entityId, string corporateId, ApplicationDbContext _context, CorporateEntity corporate)
+        private static async Task ReadCEOwnership(XmlReader reader, List<EntityOwnership> ownerships, Guid entityId, string corporateId, ApplicationDbContext _context, CorporateEntity corporate, Dictionary<string, EntityOwnership> missingOwnerships)
         {
             await reader.ReadAsync(); // skip parent node
 
             EntityOwnership ownership = new EntityOwnership();
             ownership.Id = Guid.NewGuid();
             ownership.OwnedEntityId = entityId;
+            string tin = string.Empty;
 
             while (await reader.ReadAsync())
             {
                 if (reader.NodeType == XmlNodeType.Element)
                 {
                     string elementName = reader.Name;
-                    await reader.ReadAsync(); // Move inside the element
-                    if (reader.NodeType == XmlNodeType.Text)
+                    
+                    if (await reader.ReadAsync() && reader.NodeType == XmlNodeType.Text)
                     {
                         switch (elementName)
                         {
@@ -310,8 +327,9 @@ namespace GIR_Capstone.Server.Helper
                                 break;
                             case "TIN":
                                 var corporateEntity = await _context.CorporateEntities.FirstOrDefaultAsync(c => c.Tin == reader.Value && c.CorporationId.ToString() == corporateId);
+                                tin = reader.Value;
                                 ownership.OwnerEntityId = corporateEntity.Id;
-                                corporate.ParentId = corporateEntity.Id;
+                                corporate.ParentId = corporateEntity.Id; //temp
                                 break;
                             case "OwnershipPercentage":
                                 ownership.OwnershipPercentage = Convert.ToDecimal(reader.Value);
@@ -320,7 +338,11 @@ namespace GIR_Capstone.Server.Helper
                     }
                 }
             }
-            ownerships.Add(ownership);
+
+            if (ownership.OwnerEntityId != Guid.Empty)
+                ownerships.Add(ownership);
+            else
+                missingOwnerships.Add(tin, ownership);
         }
 
         /// <summary>
@@ -340,7 +362,7 @@ namespace GIR_Capstone.Server.Helper
                     switch (reader.Name)
                     {
                         case "POPE-IPE":
-                            corporateEntity.QIIR_Status = reader.ReadElementContentAsStringAsync().Result; // Might change depending on future requirements
+                            corporateEntity.QIIR_Status = reader.ReadElementContentAsStringAsync().Result.Substring(3); // Might change depending on future requirements
                             break;
                         case "Exception":
                             break;
@@ -348,11 +370,18 @@ namespace GIR_Capstone.Server.Helper
                 }
             }
         }
-        #endregion
-        #region DirectRetrieval
+
+        /// <summary>
+        /// The GetCorporateStructure
+        /// </summary>
+        /// <param name="reader">The reader<see cref="XmlReader"/></param>
+        /// <returns>The <see cref="Task{List{CorporateEntityDto}}"/></returns>
         public static async Task<List<CorporateEntityDto>> GetCorporateStructure(XmlReader reader)
         {
             List<CorporateEntityDto> entities = new List<CorporateEntityDto>();
+            Dictionary<string, List<(Guid, Guid)>> missingOwnerships = new Dictionary<string, List<(Guid,Guid)>>(); 
+            //potentially Dictionary<string (Tin), List<string (corporateid) ,string (ownershipid)>
+            //Retreive the Tin (1st Loop), Look for Owned (2nd Loop), Look for Ownership to update (3rd Loop)
 
             await reader.ReadAsync(); // skip parent node
 
@@ -368,7 +397,7 @@ namespace GIR_Capstone.Server.Helper
                             entities.Add(upe);
                             break;
                         case "CE":
-                            var ce = await GetCE(reader.ReadSubtree(), entities);
+                            var ce = await GetCE(reader.ReadSubtree(), entities, missingOwnerships);
                             entities.Add(ce);
                             break;
                         case "ExcludedEntity":
@@ -376,8 +405,68 @@ namespace GIR_Capstone.Server.Helper
                     }
                 }
             }
-            return null!;
+
+            /*            if (missingOwnerships.Count > 0)
+                        {
+                           foreach(var owner in entities)
+                           {
+                                foreach(var ownership in missingOwnerships)
+                                {
+                                    if(ownership.Key == owner.Tin)
+                                    {
+                                        foreach(var item in ownership.Value)
+                                        {
+                                            var owned = entities.Find(e => e.Id == item.Item1);
+                                            var ownedOwnership = owned.Ownerships.Find(owner => owner.Id == item.Item2);
+                                            ownedOwnership.OwnerName = owner.Name;
+                                            ownedOwnership.OwnerEntityId = owner.Id;
+                                        }
+                                    }
+                                }
+                           }
+                        }*/
+
+            if (missingOwnerships.Count > 0)
+            {
+                var entityLookup = entities.ToDictionary(e => e.Id);
+                var tinLookup = entities.ToDictionary(e => e.Tin); // Fast TIN lookup
+                var ownershipLookup = entities
+                    .Where(e => e.Ownerships.Any())
+                    .SelectMany(e => e.Ownerships, (e, o) => new { e.Id, Ownership = o })
+                    .GroupBy(x => x.Id)
+                    .ToDictionary(g => g.Key, g => g.Select(x => x.Ownership).ToArray());
+
+                foreach (var ownership in missingOwnerships)
+                {
+                    // Use `TIN` lookup instead of `FirstOrDefault()`
+                    if (tinLookup.TryGetValue(ownership.Key, out var ownerEntity))
+                    {
+                        foreach (var (ownedEntityId, ownershipId) in ownership.Value)
+                        {
+                            if (entityLookup.TryGetValue(ownedEntityId, out var ownedEntity) &&
+                                ownershipLookup.TryGetValue(ownedEntityId, out var ownedOwnerships))
+                            {
+                                var ownedOwnership = ownedOwnerships.FirstOrDefault(o => o.Id == ownershipId);
+                                if (ownedOwnership != null)
+                                {
+                                    ownedOwnership.OwnerName = ownerEntity.Name;
+                                    ownedOwnership.OwnerEntityId = ownerEntity.Id;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            return entities;
         }
+
+        /// <summary>
+        /// The GetUPE
+        /// </summary>
+        /// <param name="reader">The reader<see cref="XmlReader"/></param>
+        /// <returns>The <see cref="Task{CorporateEntityDto}"/></returns>
         private static async Task<CorporateEntityDto> GetUPE(XmlReader reader)
         {
             await reader.ReadAsync(); // skip parent node
@@ -390,7 +479,7 @@ namespace GIR_Capstone.Server.Helper
                     switch (reader.Name)
                     {
                         case "OtherUPE":
-                           return await GetOtherUPE(reader.ReadSubtree());
+                            return await GetOtherUPE(reader.ReadSubtree());
                         case "ExcludedUPE":
                             break;
                     }
@@ -400,6 +489,11 @@ namespace GIR_Capstone.Server.Helper
             return null!;
         }
 
+        /// <summary>
+        /// The GetOtherUPE
+        /// </summary>
+        /// <param name="reader">The reader<see cref="XmlReader"/></param>
+        /// <returns>The <see cref="Task{CorporateEntityDto}"/></returns>
         private static async Task<CorporateEntityDto> GetOtherUPE(XmlReader reader)
         {
             await reader.ReadAsync(); // skip parent node
@@ -409,13 +503,18 @@ namespace GIR_Capstone.Server.Helper
                 if (reader.NodeType == XmlNodeType.Element)
                 {
                     if (reader.Name == "ID")
-                       return await GetOtherUPEId(reader.ReadSubtree());
+                        return await GetOtherUPEId(reader.ReadSubtree());
                 }
             }
 
             return null!;
         }
 
+        /// <summary>
+        /// The GetOtherUPEId
+        /// </summary>
+        /// <param name="reader">The reader<see cref="XmlReader"/></param>
+        /// <returns>The <see cref="Task{CorporateEntityDto}"/></returns>
         private static async Task<CorporateEntityDto> GetOtherUPEId(XmlReader reader)
         {
             await reader.ReadAsync();
@@ -428,8 +527,8 @@ namespace GIR_Capstone.Server.Helper
                 if (reader.NodeType == XmlNodeType.Element)
                 {
                     string elementName = reader.Name;
-                    await reader.ReadAsync(); // Move inside the element
-                    if (reader.NodeType == XmlNodeType.Text)
+
+                    if (await reader.ReadAsync() && reader.NodeType == XmlNodeType.Text)
                     {
                         switch (elementName)
                         {
@@ -455,11 +554,19 @@ namespace GIR_Capstone.Server.Helper
             return corporateEntity;
         }
 
-        private static async Task<CorporateEntityDto> GetCE(XmlReader reader, List<CorporateEntityDto> entities)
+        /// <summary>
+        /// The GetCE
+        /// </summary>
+        /// <param name="reader">The reader<see cref="XmlReader"/></param>
+        /// <param name="entities">The entities<see cref="List{CorporateEntityDto}"/></param>
+        /// <param name="missingOwnerships">The missingOwnerships<see cref="Dictionary{string,OwnershipDto}"/></param>
+        /// <returns>The <see cref="Task{CorporateEntityDto}"/></returns>
+        private static async Task<CorporateEntityDto> GetCE(XmlReader reader, List<CorporateEntityDto> entities, Dictionary<string, List<(Guid, Guid)>> missingOwnerships)
         {
             await reader.ReadAsync(); // skip parent node
 
             CorporateEntityDto corporateEntity = new CorporateEntityDto();
+            corporateEntity.ParentId = Guid.NewGuid(); //temp
             List<string> statuses = new List<string>();
             List<OwnershipDto> ownerships = new List<OwnershipDto>();
 
@@ -477,7 +584,7 @@ namespace GIR_Capstone.Server.Helper
                         case "OwnershipChange":
                             break;
                         case "Ownership":
-                            await GetCEOwnership(reader.ReadSubtree(), corporateEntity, ownerships, corporateEntity.Id, entities);
+                            await GetCEOwnership(reader.ReadSubtree(), corporateEntity, ownerships, entities, missingOwnerships);
                             break;
                         case "QIIR":
                             await GetCEQiir(reader.ReadSubtree(), corporateEntity);
@@ -492,6 +599,13 @@ namespace GIR_Capstone.Server.Helper
             return corporateEntity;
         }
 
+        /// <summary>
+        /// The GetCEId
+        /// </summary>
+        /// <param name="reader">The reader<see cref="XmlReader"/></param>
+        /// <param name="corporateEntity">The corporateEntity<see cref="CorporateEntityDto"/></param>
+        /// <param name="statuses">The statuses<see cref="List{string}"/></param>
+        /// <returns>The <see cref="Task"/></returns>
         private static async Task GetCEId(XmlReader reader, CorporateEntityDto corporateEntity, List<string> statuses)
         {
             await reader.ReadAsync(); // skip parent node
@@ -501,8 +615,8 @@ namespace GIR_Capstone.Server.Helper
                 if (reader.NodeType == XmlNodeType.Element)
                 {
                     string elementName = reader.Name;
-                    await reader.ReadAsync(); // Move inside the element
-                    if (reader.NodeType == XmlNodeType.Text)
+
+                    if (await reader.ReadAsync() && reader.NodeType == XmlNodeType.Text)
                     {
                         switch (elementName)
                         {
@@ -524,19 +638,32 @@ namespace GIR_Capstone.Server.Helper
             }
         }
 
-        private static async Task GetCEOwnership(XmlReader reader, CorporateEntityDto corporateEntity, List<OwnershipDto> ownerships, Guid id, List<CorporateEntityDto> entities)
+        /// <summary>
+        /// The GetCEOwnership
+        /// </summary>
+        /// <param name="reader">The reader<see cref="XmlReader"/></param>
+        /// <param name="corporateEntity">The corporateEntity<see cref="CorporateEntityDto"/></param>
+        /// <param name="ownerships">The ownerships<see cref="List{OwnershipDto}"/></param>
+        /// <param name="id">The id<see cref="Guid"/></param>
+        /// <param name="entities">The entities<see cref="List{CorporateEntityDto}"/></param>
+        /// <param name="missingOwnerships">The missingOwnerships<see cref="Dictionary{string, OwnershipDto}"/></param>
+        /// <returns>The <see cref="Task"/></returns>
+        private static async Task GetCEOwnership(XmlReader reader, CorporateEntityDto corporateEntity, List<OwnershipDto> ownerships, List<CorporateEntityDto> entities, Dictionary<string, List<(Guid, Guid)>> missingOwnerships)
         {
             await reader.ReadAsync(); // skip parent node
 
             OwnershipDto ownership = new OwnershipDto();
+            ownership.Id = Guid.NewGuid();
+            ownership.OwnedEntityId = corporateEntity.Id;
+            string tin = string.Empty;
 
             while (await reader.ReadAsync())
             {
                 if (reader.NodeType == XmlNodeType.Element)
                 {
                     string elementName = reader.Name;
-                    await reader.ReadAsync(); // Move inside the element
-                    if (reader.NodeType == XmlNodeType.Text)
+
+                    if (await reader.ReadAsync() && reader.NodeType == XmlNodeType.Text)
                     {
                         switch (elementName)
                         {
@@ -545,9 +672,13 @@ namespace GIR_Capstone.Server.Helper
                                 break;
                             case "TIN":
                                 var upe = entities.FirstOrDefault(corporateEntity => corporateEntity.Tin == reader.Value);
-                                ownership.OwnerName = upe.Name;
-                                ownership.OwnerEntityId = upe.Id;
-                                corporateEntity.ParentId = upe.ParentId;
+                                if (upe != null)
+                                {
+                                    ownership.OwnerName = upe.Name;
+                                    ownership.OwnerEntityId = upe.Id;
+                                }
+                                else
+                                    tin = reader.Value;
                                 break;
                             case "OwnershipPercentage":
                                 ownership.OwnershipPercentage = Convert.ToDecimal(reader.Value);
@@ -556,9 +687,24 @@ namespace GIR_Capstone.Server.Helper
                     }
                 }
             }
+
             ownerships.Add(ownership);
+            if (ownership.OwnerEntityId == Guid.Empty)
+            {
+                if (!missingOwnerships.ContainsKey(tin))
+                    missingOwnerships[tin] = new List<(Guid,Guid)>();
+
+                missingOwnerships[tin].Add((corporateEntity.Id, ownership.Id));
+            }
+                
         }
 
+        /// <summary>
+        /// The GetCEQiir
+        /// </summary>
+        /// <param name="reader">The reader<see cref="XmlReader"/></param>
+        /// <param name="corporateEntity">The corporateEntity<see cref="CorporateEntityDto"/></param>
+        /// <returns>The <see cref="Task"/></returns>
         private static async Task GetCEQiir(XmlReader reader, CorporateEntityDto corporateEntity)
         {
             await reader.ReadAsync(); // skip parent node
@@ -570,7 +716,7 @@ namespace GIR_Capstone.Server.Helper
                     switch (reader.Name)
                     {
                         case "POPE-IPE":
-                            corporateEntity.qiir_Status = reader.ReadElementContentAsStringAsync().Result; // Might change depending on future requirements
+                            corporateEntity.qiir_Status = reader.ReadElementContentAsStringAsync().Result.Substring(3); // Might change depending on future requirements
                             break;
                         case "Exception":
                             break;
@@ -578,6 +724,5 @@ namespace GIR_Capstone.Server.Helper
                 }
             }
         }
-        #endregion
     }
 }

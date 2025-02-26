@@ -64,7 +64,7 @@ public class CorporateRepository : ICorporateRepository
                 .ThenInclude(e => e.Statuses)!  // Ensure Statuses are loaded
             .Include(c => c.Entities)!
                 .ThenInclude(e => e.Ownerships)  // Ensure Ownerships are loaded
-            .FirstOrDefaultAsync(c => c.StructureId.ToString() == corporateId);
+            .FirstOrDefaultAsync(c => c.StructureId == new Guid(corporateId));
 
         if (corporate == null)
         {
@@ -99,10 +99,6 @@ public class CorporateRepository : ICorporateRepository
 
         if (corporate == null)
             return null!;
-
-        var corporateEntites = await _context.CorporateEntities
-            .Where(x => x.CorporationId == new Guid(corporateId)).ExecuteDeleteAsync();
-
 
         XmlReaderSettings settings = new XmlReaderSettings();
         settings.Async = true;
