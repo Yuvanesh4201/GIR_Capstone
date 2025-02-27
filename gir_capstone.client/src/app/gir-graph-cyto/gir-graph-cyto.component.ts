@@ -5,6 +5,7 @@ import { CorporateEntity, Ownership } from '../models/company-structure.model';
 import { GIRService } from '../services/gir-graph.service';
 import { girCytoGraphStyle } from './gir-graph-cyto-style';
 import { OwnershipEdge } from '../models/ownership-edge.model';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-gir-graph-cyto',
@@ -14,7 +15,6 @@ import { OwnershipEdge } from '../models/ownership-edge.model';
 export class GirGraphCytoComponent implements OnInit {
   @ViewChild('graph', { static: false }) cyContainer!: ElementRef;
   corporateStructure: CorporateEntity[] = [];
-  selectedCorporateEntity!: CorporateEntity;
   selectedOwnership!: Ownership;
   selectedOwnerships!: Ownership[];
   selectedOwnerName!: string;
@@ -27,6 +27,8 @@ export class GirGraphCytoComponent implements OnInit {
   mneName: any;
   xmlParse: any;
   zoom: number = 1.5;
+  corporateEntityInfo$: Observable<CorporateEntity | null> | undefined;
+
   constructor(private route: ActivatedRoute, private girService: GIRService) {}
 
   ngOnInit() {
@@ -48,6 +50,8 @@ export class GirGraphCytoComponent implements OnInit {
         }
       );
     }
+
+    this.corporateEntityInfo$ = this.girService.selectedCorporateEntity$;
   }
 
   renderGraph(): void {

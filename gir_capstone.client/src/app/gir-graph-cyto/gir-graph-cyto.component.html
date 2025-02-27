@@ -22,9 +22,9 @@
 <app-corporate-subtree *ngIf="showSelectedCorporateEntityInfo"></app-corporate-subtree>
 <app-ownership-info *ngIf="showSelectedOwnershipInfo">
 </app-ownership-info>
-<app-ownership-list *ngIf="showSelectedOwnershipList"
+<app-ownership-list *ngIf="showSelectedOwnershipList && (corporateEntityInfo$ | async) as corporateEntityInfo"
                     [ownerships]="selectedOwnerships"
-                    [ownedName]="selectedCorporateEntity.name">
+                    [ownedName]="corporateEntityInfo.name">
 </app-ownership-list>
 <button class="reset-button" (click)="resetLayout()">Reset Layout</button>
 <button class="fit-button" (click)="fitView()">Fit to Screen</button>
