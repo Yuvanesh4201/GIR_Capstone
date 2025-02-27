@@ -1,4 +1,4 @@
-<div class="info-box">
+<div class="info-box" *ngIf="corporateEntityInfo$ | async as corporateEntityInfo">
   <div class="info-row">
     <label>Name:</label>
     <span>{{ corporateEntityInfo?.name }}</span>
@@ -22,10 +22,21 @@
       </span>
     </div>
   </div>
-
-
-  <div *ngIf="corporateEntityInfo.ownerships.length" class="info-row">
+  <div *ngIf="corporateEntityInfo?.ownerships?.length" class="info-row">
     <label>Ownerships:</label>
-    <a href="#" (click)="onLinkClick($event)">Click for Ownership List</a>
+    <a *ngIf="corporateEntityInfo.ownerships.length > 1; else Ownership;" href="#" (click)="onLinkClick($event, corporateEntityInfo.ownerships)">
+      Click for Ownership List
+    </a>
   </div>
+  <ng-template #Ownership>
+    <div class="info-row-status ownership-container">
+      <div class="ownership-details">
+        <div><strong>Owner Name:</strong> {{ corporateEntityInfo.ownerships[0]?.ownerName }}</div>
+        <div><strong>Ownership Type:</strong> {{ corporateEntityInfo.ownerships[0]?.ownershipType }}</div>
+        <div><strong>Ownership %:</strong> {{ corporateEntityInfo.ownerships[0]?.ownershipPercentage }}</div>
+      </div>
+    </div>
+  </ng-template>
 </div>
+
+

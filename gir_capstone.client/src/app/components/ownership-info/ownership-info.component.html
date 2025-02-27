@@ -1,18 +1,18 @@
-<div class="info-box">
+<div class="info-box" *ngIf="ownershipInfo$ | async as ownershipInfo" >
   <div class="info-row">
     <label>Owner Name:</label>
-    <span>{{ ownerName }}</span>
+    <span>{{ ownershipInfo.ownerName }}</span>
   </div>
   <div class="info-row">
     <label>Owned Name:</label>
-    <span>{{ ownedName }}</span>
+    <span>{{ ownershipInfo.ownedName }}</span>
   </div>
   <div class="info-row">
     <label>Ownership Type:</label>
-    <span>{{ ownershipInfo?.ownershipType }}</span>
+    <span>{{ ownershipInfo.ownershipInfo?.ownershipType }}</span>
   </div>
   <div class="info-row">
     <label>Percentage Owned:</label>
-    <span>{{ ownershipInfo?.ownershipPercentage }}%</span>
+    <span>{{ownershipInfo.ownershipInfo?.ownershipPercentage }}%</span>
   </div>
 </div>

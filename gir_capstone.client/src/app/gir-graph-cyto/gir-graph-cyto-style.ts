@@ -10,9 +10,9 @@ export const girCytoGraphStyle: Stylesheet[] = [
       'color': '#ffffff', // White text for contrast
       'text-valign': 'center',
       'text-halign': 'center',
-      'font-size': '8px', // Subtler text size for a cleaner look
+      'font-size': '10px', // Subtler text size for a cleaner look
       'font-weight': 400, // Normal weight for better readability
-      'text-outline-width': 0.75,
+      'text-outline-width': 1.5,
       'text-outline-color': '#3A6FB0', // Slight shadow effect for readability
       'width': '52.5px', // Scalable size but not too large
       'height': '20px',
@@ -32,9 +32,9 @@ export const girCytoGraphStyle: Stylesheet[] = [
       'color': '#ffffff', // White text for contrast
       'text-valign': 'center',
       'text-halign': 'center',
-      'font-size': '8px', // Subtler text size for a cleaner look
+      'font-size': '10px', // Subtler text size for a cleaner look
       'font-weight': 400, // Normal weight for better readability
-      'text-outline-width': 0.75,
+      'text-outline-width': 1.5,
       'text-outline-color': '#3A6FB0', // Slight shadow effect for readability
       'width': '52.5px', // Scalable size but not too large
       'height': '20px',
@@ -54,9 +54,9 @@ export const girCytoGraphStyle: Stylesheet[] = [
       'color': '#ffffff', // White text for contrast
       'text-valign': 'center',
       'text-halign': 'center',
-      'font-size': '8px', // Subtler text size for a cleaner look
+      'font-size': '10px', // Subtler text size for a cleaner look
       'font-weight': 400, // Normal weight for better readability
-      'text-outline-width': 0.75,
+      'text-outline-width': 1.5,
       'text-outline-color': '#3A6FB0', // Slight shadow effect for readability
       'width': '52.5px', // Scalable size but not too large
       'height': '20px',
@@ -76,7 +76,7 @@ export const girCytoGraphStyle: Stylesheet[] = [
       'label': 'data(label)',
       'text-valign': 'center',
       'text-halign': 'center',
-      'font-size': '10px', // Slightly larger font for emphasis
+      'font-size': '12px', // Slightly larger font for emphasis
       'width': '52.5px', // Larger size for root
       'height': '22px',
       'border-width': 1, // Thicker border for distinction
@@ -87,42 +87,42 @@ export const girCytoGraphStyle: Stylesheet[] = [
     }
   },
 
-
-  // 🎯 Node Hover Effect (Subtle Highlight)
-/*  {
-    selector: 'node:hover',
+  {
+    selector: 'node:selected',
     style: {
-      'background-color': '#3A6FB0', // Slightly darker blue on hover
-      'border-color': '#315F90',
-      'border-width': 2 // Subtle thickness change on hover
+      'border-width': 3,
+      'border-color': 'rgba(0, 0, 0, 100)',
+      'width': '60',  // Increases width dynamically
+      'height': '30', // Increases height dynamically
     }
-  },*/
+  },
 
   // 🔗 Edge Styling (Slim & Clean)
   {
     selector: 'edge',
     style: {
-      'width': 1, // Slim edge lines for a modern look
+      'width': 1.25, // Slim edge lines for a modern look
       'curve-style': 'bezier', // Smooth flow for edges
-      'line-color': '#A0A0A0', // Soft gray for professional contrast
+      'line-color': '#8e8e8e', // Soft gray for professional contrast
       'target-arrow-shape': 'vee',
       'target-arrow-color': '#A0A0A0',
       'label': 'data(label)', // Display relationship labels
-      'font-size': '7px', // Subtle font size for readability
+      'font-size': '11px', // Subtle font size for readability
       'font-weight': 100,
-      'text-margin-y': -6, // Moves label slightly above the edge
+      'text-margin-y': -10, // Moves label slightly above the edge
       'opacity': 0.85, // Slight transparency for elegance\
       'text-rotation': 'autorotate',
     }
   },
 
-  // ✨ Edge Hover Effect (Refined Contrast)
-/*  {
-    selector: 'edge:hover',
+  {
+    selector: 'edge:selected',
     style: {
-      'line-color': '#6A6A6A', // Darker gray on hover
-      'target-arrow-color': '#6A6A6A',
-      'width': 1.5 // Slight thickness increase for focus
+      'line-color': '#FFA500', // Orange for a warm glow
+      'width': 2.5,
+      'target-arrow-color': '#FFA500',
+      'source-arrow-color': '#FFA500',
+      'opacity': 1,
     }
-  }*/
+  }
 ];

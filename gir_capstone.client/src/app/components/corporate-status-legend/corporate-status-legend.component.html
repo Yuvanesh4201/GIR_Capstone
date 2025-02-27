@@ -1,9 +1,14 @@
 <div class="legend-box">
-  <h3 class="legend-title">Legend</h3>
-  <ul class="legend-list">
-    <li *ngFor="let item of legendItems" class="legend-item">
-      <div class="legend-color" [ngStyle]="{'background-color': item.color, 'border-color': item.border}"></div>
-      <span class="legend-text">{{ item.label }}</span>
-    </li>
-  </ul>
+  <div class="legend-header" (click)="toggleLegend()">
+    <span class="legend-title">Legend</span>
+    <span class="legend-toggle" [ngClass]="{ 'rotated': showLegend }">▼</span>
+  </div>
+  <div class="legend-content" [ngClass]="{ 'collapsed': !showLegend }">
+    <ul class="legend-list">
+      <li *ngFor="let item of legendItems" class="legend-item">
+        <div class="legend-color" [ngStyle]="{'background-color': item.color, 'border-color': item.border}"></div>
+        <span class="legend-text">{{ item.label }}</span>
+      </li>
+    </ul>
+  </div>
 </div>

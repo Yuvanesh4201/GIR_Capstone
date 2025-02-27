@@ -17,13 +17,10 @@
   <div #graph class="cy-container"></div>
 </div>
 <app-corporate-entity-info *ngIf="showSelectedCorporateEntityInfo"
-                           [corporateEntityInfo]="selectedCorporateEntity"
                            (showOwnershipList)="setShowOwnershipList($event)">
 </app-corporate-entity-info>
-<app-ownership-info *ngIf="showSelectedOwnershipInfo"
-                    [ownershipInfo]="selectedOwnership"
-                    [ownedName]="selectedOwnedName"
-                    [ownerName]="selectedOwnerName">
+<app-corporate-subtree *ngIf="showSelectedCorporateEntityInfo"></app-corporate-subtree>
+<app-ownership-info *ngIf="showSelectedOwnershipInfo">
 </app-ownership-info>
 <app-ownership-list *ngIf="showSelectedOwnershipList"
                     [ownerships]="selectedOwnerships"

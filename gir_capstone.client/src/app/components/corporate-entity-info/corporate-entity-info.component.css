@@ -12,6 +12,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adds depth */
   position: relative;
   font-family: 'Arial', sans-serif; /* Professional font */
+  z-index: 100;
 }
 
 .info-row {
@@ -98,6 +99,27 @@
   padding: 2px 6px;
   text-align: center; /* Ensures text is aligned properly */
 }
+
+/* Ensures that "Ownerships: Ownership Details" does not appear on one line */
+.ownership-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 5px;
+}
+
+/* Aligns Ownership Details properly */
+.ownership-details {
+  display: flex;
+  flex-direction: column;
+  padding-left: 10px; /* Indentation for cleaner look */
+  font-size: 10px;
+  color: #555;
+  font-weight: 500;
+  gap: 2px; /* Space between each row */
+}
+
+
 
 
 

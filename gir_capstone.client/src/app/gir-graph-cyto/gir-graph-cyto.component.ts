@@ -4,6 +4,7 @@ import cytoscape from 'cytoscape';
 import { CorporateEntity, Ownership } from '../models/company-structure.model';
 import { GIRService } from '../services/gir-graph.service';
 import { girCytoGraphStyle } from './gir-graph-cyto-style';
+import { OwnershipEdge } from '../models/ownership-edge.model';
 
 @Component({
   selector: 'app-gir-graph-cyto',
@@ -85,11 +86,24 @@ export class GirGraphCytoComponent implements OnInit {
     this.zoom = this.cy.zoom();
 
     this.cy.on('tap', 'node', (event:any) => {
-      const node = event.target;
+      const clickedNode = event.target;
       this.showSelectedCorporateEntityInfo = true;
       this.showSelectedOwnershipInfo = false;
       this.showSelectedOwnershipList = false;
-      this.selectedCorporateEntity = node.data().entityInfo;
+      this.girService.updateSelectedCorporateEntity(clickedNode.data().entityInfo);
+
+      //Create SubTree
+      const subTree = this.cy.elements().bfs(
+        {
+          roots: clickedNode,
+          directed: true,
+        });
+
+      subTree.path.forEach((n: cytoscape.NodeSingular | cytoscape.EdgeSingular) => {
+        n.unselect();
+      });
+
+      this.girService.updateSubTreeData(subTree.path.jsons()); 
     });
 
     this.cy.on('tap', 'edge', (event: any) => {
@@ -97,9 +111,12 @@ export class GirGraphCytoComponent implements OnInit {
       this.showSelectedCorporateEntityInfo = false;
       this.showSelectedOwnershipInfo = true;
       this.showSelectedOwnershipList = false;
-      this.selectedOwnership = edge.data().ownershipInfo;
-      this.selectedOwnedName = edge.data().ownedName;
-      this.selectedOwnerName = edge.data().ownerName;
+
+      this.girService.updateSelectedOwnershipInfo({
+        ownershipInfo: edge.data().ownershipInfo,
+        ownedName: edge.data().ownedName,
+        ownerName: edge.data().ownerName
+      } as OwnershipEdge);
     });
 
     this.cy.on('tap', (event: any) => {
@@ -139,7 +156,6 @@ export class GirGraphCytoComponent implements OnInit {
   }
 
   applyEdgeStyle(event: any) {
-  
     this.cy.edges().forEach((edge: cytoscape.EdgeSingular) => {
       edge.style({
         'curve-style': event.target.value,

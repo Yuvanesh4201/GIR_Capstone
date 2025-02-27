@@ -1,22 +1,30 @@
-import { Component, EventEmitter, Input, input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, input, OnInit, Output } from '@angular/core';
 import { CorporateEntity, Ownership } from '../../models/company-structure.model';
+import { GIRService } from '../../services/gir-graph.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-corporate-entity-info',
   templateUrl: './corporate-entity-info.component.html',
   styleUrl: './corporate-entity-info.component.css'
 })
-export class CorporateEntityInfoComponent {
-  @Input() corporateEntityInfo!: CorporateEntity;
+export class CorporateEntityInfoComponent implements OnInit {
   @Output() showOwnershipList = new EventEmitter<Ownership[]>();
+  corporateEntityInfo$: Observable<CorporateEntity | null> | undefined;
 
-  onLinkClick(event: Event): void {
+  constructor(private girService: GIRService) { }
+
+  ngOnInit() {
+    this.corporateEntityInfo$ = this.girService.selectedCorporateEntity$;
+  }
+
+  onLinkClick(event: Event, ownerships: Ownership[]): void {
     event.preventDefault();
-    if (this.corporateEntityInfo?.ownerships?.length) {
-      this.showOwnershipList.emit(this.corporateEntityInfo.ownerships);
+    if (ownerships?.length) {
+      this.showOwnershipList.emit(ownerships);
     } else {
       console.warn('No ownership data available');
-      this.showOwnershipList.emit([]); // Emit empty array to prevent type errors
+      this.showOwnershipList.emit([]); // ✅ Prevent type errors
     }
   }
 }

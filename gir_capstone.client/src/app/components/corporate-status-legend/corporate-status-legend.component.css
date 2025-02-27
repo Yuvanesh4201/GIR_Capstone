@@ -1,58 +1,79 @@
 .legend-box {
-  display: flex;
-  flex-direction: column;
   position: absolute;
-  bottom: 20px; /* Position at bottom */
-  right: 20px; /* Position at right */
-  z-index: 999;
-  gap: 8px;
-  width: 300px; /* Consistent width */
-  padding: 12px 15px;
+  bottom: 15px;
+  right: 15px;
+  width: 250px; /* Smaller width */
+  padding: 8px;
   background: #f8f9fa;
   border-radius: 6px;
   border: 1px solid #d1d1d1;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   font-family: 'Arial', sans-serif;
+  font-size: 12px; /* Compact text */
 }
 
-.legend-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: black;
-  margin-bottom: 2px;
-  text-align: left; /* Ensures alignment */
+/* 🔹 Header Styling */
+.legend-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 5px 8px;
 }
 
+/* 🔹 Toggle Arrow */
+.legend-toggle {
+  transition: transform 0.2s ease-in-out;
+}
+
+  .legend-toggle.rotated {
+    transform: rotate(180deg);
+  }
+
+/* 🔹 Legend Content - Default Hidden */
+.legend-content {
+  max-height: 150px; /* Adjust if needed */
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  opacity: 1;
+}
+
+  .legend-content.collapsed {
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+/* 🔹 Legend Items */
 .legend-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px; /* Reduce gap for compact design */
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 10px; /* Ensures proper spacing */
+  gap: 6px;
+  padding: 3px 0;
 }
 
 .legend-color {
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
   border: 1px solid black;
 }
 
 .legend-text {
-  font-size: 12px;
+  font-size: 11px; /* Smaller text */
   color: black;
-  font-weight: 500;
+  font-weight: 548;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-/* ✅ Hover effect for sleek UI */
-.legend-box:hover {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-  border-color: #bbb;
 }
