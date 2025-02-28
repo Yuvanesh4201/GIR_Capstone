@@ -16,11 +16,11 @@
 <div class="cy-wrapper">
   <div #graph class="cy-container"></div>
 </div>
-<app-corporate-entity-info *ngIf="showSelectedCorporateEntityInfo"
+<app-corporate-entity-info *ngIf="corporateEntityInfo$ | async"
                            (showOwnershipList)="setShowOwnershipList($event)">
 </app-corporate-entity-info>
-<app-corporate-subtree *ngIf="showSelectedCorporateEntityInfo"></app-corporate-subtree>
-<app-ownership-info *ngIf="showSelectedOwnershipInfo">
+<app-corporate-subtree *ngIf="corporateEntityInfo$ | async"></app-corporate-subtree>
+<app-ownership-info *ngIf="ownershipInfo$ | async">
 </app-ownership-info>
 <app-ownership-list *ngIf="showSelectedOwnershipList && (corporateEntityInfo$ | async) as corporateEntityInfo"
                     [ownerships]="selectedOwnerships"

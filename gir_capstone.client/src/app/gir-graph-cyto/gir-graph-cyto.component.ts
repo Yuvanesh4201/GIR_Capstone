@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import cytoscape from 'cytoscape';
+import cytoscape, { ElementDefinition } from 'cytoscape';
 import { CorporateEntity, Ownership } from '../models/company-structure.model';
 import { GIRService } from '../services/gir-graph.service';
 import { girCytoGraphStyle } from './gir-graph-cyto-style';
@@ -28,6 +28,7 @@ export class GirGraphCytoComponent implements OnInit {
   xmlParse: any;
   zoom: number = 1.5;
   corporateEntityInfo$: Observable<CorporateEntity | null> | undefined;
+  ownershipInfo$: Observable<any> | undefined;
 
   constructor(private route: ActivatedRoute, private girService: GIRService) {}
 
@@ -52,10 +53,10 @@ export class GirGraphCytoComponent implements OnInit {
     }
 
     this.corporateEntityInfo$ = this.girService.selectedCorporateEntity$;
+    this.ownershipInfo$ = this.girService.selectedOwnershipInfo$;
   }
 
   renderGraph(): void {
-    const corporateId = this.route.snapshot.queryParamMap.get('id') ?? "";
     this.cy = cytoscape({
       container: this.cyContainer.nativeElement,
       pixelRatio: 3,
@@ -82,10 +83,10 @@ export class GirGraphCytoComponent implements OnInit {
             grabbable: false,
           }))
         )
-      ], 
+      ],
       style: girCytoGraphStyle,
       layout: { name: 'breadthfirst' },
-    })
+    });
 
     this.zoom = this.cy.zoom();
 
@@ -107,7 +108,14 @@ export class GirGraphCytoComponent implements OnInit {
         n.unselect();
       });
 
-      this.girService.updateSubTreeData(subTree.path.jsons()); 
+      const validSubTreeData: ElementDefinition[] = subTree.path.map((n: cytoscape.NodeSingular | cytoscape.EdgeSingular) => ({
+        data: { ...n.data() },
+        grabbable: false,
+      }));
+
+      this.girService.updateSubTreeData(validSubTreeData);
+
+      
     });
 
     this.cy.on('tap', 'edge', (event: any) => {
@@ -125,9 +133,8 @@ export class GirGraphCytoComponent implements OnInit {
 
     this.cy.on('tap', (event: any) => {
       if (event.target === this.cy) {
-        this.showSelectedCorporateEntityInfo = false;
-        this.showSelectedOwnershipInfo = false;
-        this.showSelectedOwnershipList = false;
+        this.girService.clearSelectedCorporateEntity();
+        this.girService.clearSelectedOwnershipInfo();
       }
     });
 
@@ -154,8 +161,6 @@ export class GirGraphCytoComponent implements OnInit {
 
   setShowOwnershipList(ownerships: Ownership[]) {
     this.showSelectedOwnershipList = true;
-    this.showSelectedCorporateEntityInfo = false;
-    this.showSelectedOwnershipInfo = false;
     this.selectedOwnerships = ownerships;
   }
 

@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Ownership } from '../../models/company-structure.model';
 import { GIRService } from '../../services/gir-graph.service';
 import { Observable } from 'rxjs';
 import { OwnershipEdge } from '../../models/ownership-edge.model';

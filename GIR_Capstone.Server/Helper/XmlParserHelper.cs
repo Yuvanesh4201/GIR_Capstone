@@ -406,7 +406,7 @@ namespace GIR_Capstone.Server.Helper
                 }
             }
 
-            /*            if (missingOwnerships.Count > 0)
+            /* if (missingOwnerships.Count > 0)
                         {
                            foreach(var owner in entities)
                            {
@@ -457,7 +457,6 @@ namespace GIR_Capstone.Server.Helper
                     }
                 }
             }
-
 
             return entities;
         }

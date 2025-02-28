@@ -42,15 +42,24 @@ export class GIRService {
   }
 
   updateSubTreeData(newData: any) {
-    this.subTreeSubject.next(newData); // Updates graph data
+    this.subTreeSubject.next(newData);
+  }
+  clearSubTreeData() {
+    this.subTreeSubject.next(null);
   }
 
   updateSelectedCorporateEntity(newData: any) {
     this.selectedCorporateEntitySubject.next(newData);
   }
+  clearSelectedCorporateEntity() {
+    this.selectedCorporateEntitySubject.next(null);
+  }
 
   updateSelectedOwnershipInfo(newData: any) {
     this.selectedOwnershipInfoSubject.next(newData);
+  }
+  clearSelectedOwnershipInfo() {
+    this.selectedOwnershipInfoSubject.next(null);
   }
 
 }
