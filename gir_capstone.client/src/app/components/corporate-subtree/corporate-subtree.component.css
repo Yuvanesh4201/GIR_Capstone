@@ -26,3 +26,35 @@
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+.cy-subtree-wrapper-inner {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 50vw; /* ✅ Matches container width */
+  height: 90vh; /* ✅ Matches container height */
+  background: #e4e4e4;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  padding: 5px;
+}
+
+.back-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #0074D9;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+}
+
+  .back-button:hover {
+    background: #0056A6;
+  }

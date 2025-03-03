@@ -1,18 +1,18 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import cytoscape, { ElementDefinition } from 'cytoscape';
 import { CorporateEntity, Ownership } from '../models/company-structure.model';
 import { GIRService } from '../services/gir-graph.service';
 import { girCytoGraphStyle } from './gir-graph-cyto-style';
 import { OwnershipEdge } from '../models/ownership-edge.model';
-import { Observable } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-gir-graph-cyto',
   templateUrl: './gir-graph-cyto.component.html',
   styleUrls: ['./gir-graph-cyto.component.css']
 })
-export class GirGraphCytoComponent implements OnInit {
+export class GirGraphCytoComponent implements OnInit, OnDestroy {
   @ViewChild('graph', { static: false }) cyContainer!: ElementRef;
   corporateStructure: CorporateEntity[] = [];
   selectedOwnership!: Ownership;
@@ -30,6 +30,7 @@ export class GirGraphCytoComponent implements OnInit {
   corporateEntityInfo$: Observable<CorporateEntity | null> | undefined;
   ownershipInfo$: Observable<any> | undefined;
   nodesOnly: any; 
+  private destroy$ = new Subject<void>();
 
   constructor(private route: ActivatedRoute, private girService: GIRService) {}
 
@@ -39,18 +40,20 @@ export class GirGraphCytoComponent implements OnInit {
     this.xmlParse = this.route.snapshot.queryParamMap.get('xmlParse');
 
     if (this.corporateId) {
-      this.girService.getCorporateStructure(this.corporateId, this.xmlParse).subscribe(
-        (data) => {
-          if (data) {
-            console.log('Corporate ID Works:', this.corporateId);
-            this.corporateStructure = data;
-            this.renderGraph();
+      this.girService.getCorporateStructure(this.corporateId, this.xmlParse)
+        .pipe(takeUntil(this.destroy$)) // 🚀 Ensure automatic cleanup
+        .subscribe(
+          (data) => {
+            if (data) {
+              console.log('Corporate ID Works:', this.corporateId);
+              this.corporateStructure = data;
+              this.renderGraph();
+            }
+          },
+          (error) => {
+            console.error("Error fetching corporates:", error);
           }
-        },
-        (error) => {
-          console.error("Error fetching corporates:", error);
-        }
-      );
+        );
     }
 
     this.corporateEntityInfo$ = this.girService.selectedCorporateEntity$;
@@ -91,58 +94,19 @@ export class GirGraphCytoComponent implements OnInit {
 
     this.zoom = this.cy.zoom();
 
-    this.cy.on('tap', 'node', (event:any) => {
-      const clickedNode = event.target;
-      this.girService.clearSelectedOwnershipInfo();
-      this.showSelectedOwnershipList = false;
-      this.girService.updateSelectedCorporateEntity(clickedNode.data().entityInfo);
-
-      //Create SubTree
-      const subTree = this.cy.elements().bfs(
-        {
-          roots: clickedNode,
-          directed: true,
-        });
-
-      subTree.path.forEach((n: cytoscape.NodeSingular | cytoscape.EdgeSingular) => {
-        n.unselect();
-      });
-
-      const validSubTreeData: ElementDefinition[] = subTree.path.map((n: cytoscape.NodeSingular | cytoscape.EdgeSingular) => ({
-        data: { ...n.data() },
-        grabbable: false,
-      }));
-
-      // ✅ Ensure correct typing & filtering
-      this.nodesOnly = validSubTreeData.filter((el: ElementDefinition) =>
-        el.data?.id !== undefined && !el.data?.source && !el.data?.target
-      );
-
-      // ✅ Update subtree only if more than 2 nodes exist
-      if ((this.nodesOnly?.length ?? 0) > 2) {
-        this.girService.updateSubTreeData(validSubTreeData);
-      }
-
+    this.cy.on('tap', 'node', (event: any) => {
+      const target = event.target;
+      this.handleNodeTap(target);
     });
 
     this.cy.on('tap', 'edge', (event: any) => {
-      const edge = event.target;
-      this.girService.clearSelectedCorporateEntity();
-      this.showSelectedOwnershipList = false;
-
-      this.girService.updateSelectedOwnershipInfo({
-        ownershipInfo: edge.data().ownershipInfo,
-        ownedName: edge.data().ownedName,
-        ownerName: edge.data().ownerName
-      } as OwnershipEdge);
+      const target = event.target;
+      this.handleEdgeTap(target);
     });
 
     this.cy.on('tap', (event: any) => {
-      if (event.target === this.cy) {
-        this.girService.clearSelectedCorporateEntity();
-        this.girService.clearSelectedOwnershipInfo();
-        this.showSelectedOwnershipList = false;
-      }
+      if (event.target === this.cy)
+        this.handleBackgroundTap();
     });
 
     this.cy.layout({
@@ -154,7 +118,58 @@ export class GirGraphCytoComponent implements OnInit {
 
     this.cy.zoom(this.zoom);
     this.cy.centre();
+  }
+
+
+  handleNodeTap(node: cytoscape.NodeSingular) {
+    this.girService.clearSelectedOwnershipInfo();
+    this.showSelectedOwnershipList = false;
+    this.girService.updateSelectedCorporateEntity(node.data().entityInfo);
+    this.createAndRenderSubTree(node);
+  }
+
+  createAndRenderSubTree(node: cytoscape.NodeSingular) {
+    const subTree = this.cy.elements().bfs(
+      {
+        roots: node,
+        directed: true,
+      });
+
+    subTree.path.forEach((n: cytoscape.NodeSingular | cytoscape.EdgeSingular) => {
+      n.unselect();
+    });
+
+    const validSubTreeData: ElementDefinition[] = subTree.path.map((n: cytoscape.NodeSingular | cytoscape.EdgeSingular) => ({
+      data: { ...n.data() },
+      grabbable: false,
+    }));
+
+    // ✅ Ensure correct typing & filtering
+    this.nodesOnly = validSubTreeData.filter((el: ElementDefinition) =>
+      el.data?.id !== undefined && !el.data?.source && !el.data?.target
+    );
+
+    // ✅ Update subtree only if more than 2 nodes exist
+    if ((this.nodesOnly?.length ?? 0) > 2) {
+      this.girService.updateSubTreeData(validSubTreeData);
     }
+  }
+
+  handleEdgeTap(edge: cytoscape.EdgeSingular) {
+    this.girService.clearSelectedCorporateEntity();
+    this.showSelectedOwnershipList = false;
+    this.girService.updateSelectedOwnershipInfo({
+      ownershipInfo: edge.data().ownershipInfo,
+      ownedName: edge.data().ownedName,
+      ownerName: edge.data().ownerName
+    } as OwnershipEdge);
+  }
+
+  handleBackgroundTap() {
+    this.girService.clearSelectedCorporateEntity();
+    this.girService.clearSelectedOwnershipInfo();
+    this.showSelectedOwnershipList = false;
+  }
 
   resetLayout() {
     this.cy.reset();
@@ -183,6 +198,7 @@ export class GirGraphCytoComponent implements OnInit {
     });
   }
 
+  //this will change later (use decoded values)
   setNodeStyleType(node: CorporateEntity): string {
     if (node.parentId) {
       switch (node.qiir_Status) {
@@ -198,5 +214,11 @@ export class GirGraphCytoComponent implements OnInit {
     }
 
     return 'UPE';
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+    if (this.cy) this.cy.destroy();
   }
 }

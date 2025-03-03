@@ -1,3 +1,9 @@
 <div class="cy-subtree-wrapper" (click)="onWrapperClick($event)">
-  <div #subGraph class="cy-subtree-container"></div>
+  <div class="cy-subtree-wrapper-inner">
+    <div #subGraph class="cy-subtree-container"></div>
+    <button class="back-button" *ngIf="(subTreeList$ | async)?.length > 1" 
+            (click)="backToPreviousTree()">
+      Back
+    </button>
+  </div>
 </div>
