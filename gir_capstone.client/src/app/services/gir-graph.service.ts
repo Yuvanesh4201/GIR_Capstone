@@ -16,12 +16,15 @@ export class GIRService {
   private selectedCorporateEntitySubject = new BehaviorSubject<any>(null);
   private selectedOwnershipInfoSubject = new BehaviorSubject<any>(null);
   private subTreeListSubject = new BehaviorSubject<ElementDefinition[][]>([]);
-  
+  private currentCyGraphSubject = new BehaviorSubject<any>(null);
+  private mainCyGraphSubject = new BehaviorSubject<any>(null);
+  mainCyGraph$ = this.mainCyGraphSubject.asObservable();
 
   subTreeData$ = this.subTreeSubject.asObservable(); // Observable to listen for changes
   selectedCorporateEntity$ = this.selectedCorporateEntitySubject.asObservable();
   selectedOwnershipInfo$ = this.selectedOwnershipInfoSubject.asObservable();
   subTreeList$ = this.subTreeListSubject.asObservable();
+  currentCyGraph$ = this.currentCyGraphSubject.asObservable();
   constructor(private http: HttpClient) { }
 
   getCorporates(): Observable<Corporate[]> {
@@ -86,5 +89,34 @@ export class GIRService {
     this.subTreeListSubject.next([]); // ✅ Automatically triggers UI updates
   }
 
+  updateCurrentCyGraph(cy: cytoscape.Core) {
+    this.currentCyGraphSubject.next(cy);
+  }
+
+  updateMainCyGraph(cy: cytoscape.Core) {
+    this.mainCyGraphSubject.next(cy);
+  }
+
+  clearCurrentCyGraph() {
+    this.currentCyGraphSubject.next(this.mainCyGraphSubject.value);
+  }
+
+  exportGraphAsImage(cy: cytoscape.Core) {
+    if(!cy) {
+      console.error("Cytoscape instance is not available.");
+      alert("Error: Cannot export graph, Cytoscape not initialized.");
+      return;
+    }
+
+    let imageData = cy.jpg({ full: true, quality: 1 });
+
+    // Create a download link
+    const link = document.createElement('a');
+    link.href = imageData;
+    link.download = `cytoscape-graph.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 
 }

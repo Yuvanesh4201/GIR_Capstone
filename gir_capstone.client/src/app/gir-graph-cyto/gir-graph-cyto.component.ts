@@ -31,6 +31,7 @@ export class GirGraphCytoComponent implements OnInit, OnDestroy {
   ownershipInfo$: Observable<any> | undefined;
   nodesOnly: any; 
   private destroy$ = new Subject<void>();
+  currentCy: any; 
 
   constructor(private route: ActivatedRoute, private girService: GIRService) {}
 
@@ -48,6 +49,8 @@ export class GirGraphCytoComponent implements OnInit, OnDestroy {
               console.log('Corporate ID Works:', this.corporateId);
               this.corporateStructure = data;
               this.renderGraph();
+              this.girService.updateMainCyGraph(this.cy);
+              this.girService.updateCurrentCyGraph(this.cy);
             }
           },
           (error) => {
@@ -58,6 +61,7 @@ export class GirGraphCytoComponent implements OnInit, OnDestroy {
 
     this.corporateEntityInfo$ = this.girService.selectedCorporateEntity$;
     this.ownershipInfo$ = this.girService.selectedOwnershipInfo$;
+    this.girService.currentCyGraph$.subscribe(data => this.currentCy = data);
   }
 
   renderGraph(): void {
@@ -214,6 +218,10 @@ export class GirGraphCytoComponent implements OnInit, OnDestroy {
     }
 
     return 'UPE';
+  }
+
+  exportToJpg() {
+    this.girService.exportGraphAsImage(this.currentCy);
   }
 
   ngOnDestroy() {

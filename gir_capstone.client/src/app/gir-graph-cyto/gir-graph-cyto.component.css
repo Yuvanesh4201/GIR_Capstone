@@ -17,7 +17,7 @@
   overflow: hidden;
 }
 
-.reset-button, .fit-button {
+.reset-button, .fit-button, .pic-button {
   position: absolute;
   top: 15px;
   right: 15px;
@@ -32,7 +32,7 @@
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-  .reset-button:hover, .fit-button:hover {
+  .reset-button:hover, .fit-button:hover, .pic-button:hover {
     background: #0056A6;
   }
 
@@ -40,6 +40,10 @@
 .fit-button {
   right: 140px; /* Moves "Fit to Screen" button slightly to the left */
 }
+.pic-button {
+  right: 265px; /* Moves "Fit to Screen" button slightly to the left */
+}
+
 
 .title {
   position: absolute;

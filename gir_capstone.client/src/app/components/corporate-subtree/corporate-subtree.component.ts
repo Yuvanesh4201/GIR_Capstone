@@ -33,6 +33,7 @@ export class CorporateSubtreeComponent implements OnInit, AfterViewInit, OnDestr
       if (data) {
         this.girService.updateSubTreeList(data); //dont like this
         this.renderSubTree(data);
+        this.girService.updateCurrentCyGraph(this.cy);
       }
     });
   }
@@ -123,6 +124,7 @@ export class CorporateSubtreeComponent implements OnInit, AfterViewInit, OnDestr
       this.girService.clearSelectedOwnershipInfo();
       this.girService.clearSubTreeData();
       this.girService.clearSubTreeList();
+      this.girService.clearCurrentCyGraph();
     }
   }
 
