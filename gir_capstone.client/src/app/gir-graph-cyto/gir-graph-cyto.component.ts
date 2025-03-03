@@ -29,6 +29,7 @@ export class GirGraphCytoComponent implements OnInit {
   zoom: number = 1.5;
   corporateEntityInfo$: Observable<CorporateEntity | null> | undefined;
   ownershipInfo$: Observable<any> | undefined;
+  nodesOnly: any; 
 
   constructor(private route: ActivatedRoute, private girService: GIRService) {}
 
@@ -92,8 +93,7 @@ export class GirGraphCytoComponent implements OnInit {
 
     this.cy.on('tap', 'node', (event:any) => {
       const clickedNode = event.target;
-      this.showSelectedCorporateEntityInfo = true;
-      this.showSelectedOwnershipInfo = false;
+      this.girService.clearSelectedOwnershipInfo();
       this.showSelectedOwnershipList = false;
       this.girService.updateSelectedCorporateEntity(clickedNode.data().entityInfo);
 
@@ -113,15 +113,21 @@ export class GirGraphCytoComponent implements OnInit {
         grabbable: false,
       }));
 
-      this.girService.updateSubTreeData(validSubTreeData);
+      // ✅ Ensure correct typing & filtering
+      this.nodesOnly = validSubTreeData.filter((el: ElementDefinition) =>
+        el.data?.id !== undefined && !el.data?.source && !el.data?.target
+      );
 
-      
+      // ✅ Update subtree only if more than 2 nodes exist
+      if ((this.nodesOnly?.length ?? 0) > 2) {
+        this.girService.updateSubTreeData(validSubTreeData);
+      }
+
     });
 
     this.cy.on('tap', 'edge', (event: any) => {
       const edge = event.target;
-      this.showSelectedCorporateEntityInfo = false;
-      this.showSelectedOwnershipInfo = true;
+      this.girService.clearSelectedCorporateEntity();
       this.showSelectedOwnershipList = false;
 
       this.girService.updateSelectedOwnershipInfo({
@@ -135,6 +141,7 @@ export class GirGraphCytoComponent implements OnInit {
       if (event.target === this.cy) {
         this.girService.clearSelectedCorporateEntity();
         this.girService.clearSelectedOwnershipInfo();
+        this.showSelectedOwnershipList = false;
       }
     });
 
@@ -162,6 +169,10 @@ export class GirGraphCytoComponent implements OnInit {
   setShowOwnershipList(ownerships: Ownership[]) {
     this.showSelectedOwnershipList = true;
     this.selectedOwnerships = ownerships;
+  }
+
+  hideOwnershipList() {
+    this.showSelectedOwnershipList = false;
   }
 
   applyEdgeStyle(event: any) {

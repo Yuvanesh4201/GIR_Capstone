@@ -3,6 +3,17 @@ import { Stylesheet } from 'cytoscape';
 export const girCytoGraphStyle: Stylesheet[] = [
   // 🌟 Node Styling (Minimalist & Elegant)
   {
+    selector: 'node',
+    style: {
+      'background-color': '#b7d1e9',
+      'border-width': 1,
+      'border-color': '#3A6FB0',
+      'width': '52.5px',
+      'height': '20px'
+    }
+  },
+
+  {
     selector: 'node[type="CE"]',
     style: {
       'background-color': '#b7d1e9', // Muted blue for a professional touch

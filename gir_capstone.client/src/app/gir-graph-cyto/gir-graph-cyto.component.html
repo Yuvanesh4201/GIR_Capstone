@@ -19,7 +19,12 @@
 <app-corporate-entity-info *ngIf="corporateEntityInfo$ | async"
                            (showOwnershipList)="setShowOwnershipList($event)">
 </app-corporate-entity-info>
-<app-corporate-subtree *ngIf="corporateEntityInfo$ | async"></app-corporate-subtree>
+<ng-container *ngIf="corporateEntityInfo$ | async as entityInfo">
+  <app-corporate-subtree 
+    *ngIf="(nodesOnly?.length ?? 0) > 2"
+    (closeOwnershipList)="hideOwnershipList()">
+  </app-corporate-subtree>
+</ng-container>
 <app-ownership-info *ngIf="ownershipInfo$ | async">
 </app-ownership-info>
 <app-ownership-list *ngIf="showSelectedOwnershipList && (corporateEntityInfo$ | async) as corporateEntityInfo"

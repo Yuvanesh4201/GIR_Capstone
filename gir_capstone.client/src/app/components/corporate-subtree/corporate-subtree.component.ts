@@ -1,8 +1,9 @@
-import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import cytoscape, { ElementDefinition } from 'cytoscape';
 import { girCytoGraphStyle } from '../../gir-graph-cyto/gir-graph-cyto-style';
 import { GIRService } from '../../services/gir-graph.service';
 import { take } from 'rxjs';
+import { OwnershipEdge } from '../../models/ownership-edge.model';
 
 @Component({
   selector: 'app-corporate-subtree',
@@ -11,6 +12,7 @@ import { take } from 'rxjs';
 })
 export class CorporateSubtreeComponent implements AfterViewInit {
   @ViewChild('subGraph', { static: false }) cyContainer!: ElementRef;
+  @Output() closeOwnershipList = new EventEmitter<void>();
   cy: any;
   corporateStructure: any;
   constructor(private girService: GIRService) {}
@@ -39,9 +41,10 @@ export class CorporateSubtreeComponent implements AfterViewInit {
 
     this.cy.on('tap', 'node', (event: any) => {
       const clickedNode = event.target;
-      //this.showSelectedOwnershipList = false;
+      this.closeOwnershipList.emit();
+      this.girService.clearSelectedOwnershipInfo();
       this.girService.updateSelectedCorporateEntity(clickedNode.data().entityInfo);
-
+      
       //Create SubTree
       const subTree = this.cy.elements().bfs(
       {
@@ -58,9 +61,32 @@ export class CorporateSubtreeComponent implements AfterViewInit {
         grabbable: false,
       }));
 
-      this.renderSubTree(validSubTreeData);
+      const nodesOnly = validSubTreeData.filter((el: ElementDefinition) =>
+        el.data?.id !== undefined && !el.data?.source && !el.data?.target
+      );
+
+      if ((nodesOnly?.length ?? 0) > 2)
+        this.renderSubTree(validSubTreeData);
       
       clickedNode.unselect();
+    });
+
+    this.cy.on('tap', (event: any) => {
+      if (event.target === this.cy) {
+        this.closeOwnershipList.emit();
+        this.girService.clearSelectedOwnershipInfo();
+      }
+    });
+
+    this.cy.on('tap', 'edge', (event: any) => {
+      const edge = event.target;
+      this.closeOwnershipList.emit();
+
+      this.girService.updateSelectedOwnershipInfo({
+        ownershipInfo: edge.data().ownershipInfo,
+        ownedName: edge.data().ownedName,
+        ownerName: edge.data().ownerName
+      } as OwnershipEdge);
     });
   }
 
