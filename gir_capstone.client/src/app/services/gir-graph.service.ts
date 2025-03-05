@@ -101,7 +101,7 @@ export class GIRService {
     this.currentCyGraphSubject.next(this.mainCyGraphSubject.value);
   }
 
-  exportGraphAsImage(cy: cytoscape.Core) {
+  exportGraphAsImage(mneName:string, cy: cytoscape.Core) {
     if(!cy) {
       console.error("Cytoscape instance is not available.");
       alert("Error: Cannot export graph, Cytoscape not initialized.");
@@ -113,7 +113,29 @@ export class GIRService {
     // Create a download link
     const link = document.createElement('a');
     link.href = imageData;
-    link.download = `cytoscape-graph.jpg`;
+
+    const currentGraphRoot = this.currentCyGraphSubject.value
+      ?.nodes()
+      ?.roots()[0] ?? "No Root Found";
+
+    const cyRoot = cy?.elements()
+      ?.nodes()
+      ?.roots()[0]
+      ?.id() ?? "No Root Found";
+
+    const mainCyRoot = this.mainCyGraphSubject?.value
+      ?.elements()
+      ?.nodes()
+      ?.roots()[0]
+      ?.id() ?? "No Root Found";
+
+    if (this.subTreeSubject.value === null || this.subTreeSubject.value === undefined) {
+      link.download = `${mneName.replace(/\s+/g, '_')}.jpg`;
+    }
+    else {
+      link.download = `${mneName.replace(/\s+/g, '_')}_${currentGraphRoot?.data()?.label}.jpg`;
+    }
+
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

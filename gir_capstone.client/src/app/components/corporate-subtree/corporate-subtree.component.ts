@@ -100,7 +100,8 @@ export class CorporateSubtreeComponent implements OnInit, AfterViewInit, OnDestr
         this.girService.updateSubTreeList(validSubTreeData);
       }
 
-      this.renderSubTree(validSubTreeData);
+      this.renderSubTree(validSubTreeData); //due to a bug in cytoscape, function is called directly here
+      this.girService.updateCurrentCyGraph(this.cy);
     }
   }
 

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import cytoscape, { ElementDefinition } from 'cytoscape';
 import { CorporateEntity, Ownership } from '../models/company-structure.model';
@@ -148,12 +148,12 @@ export class GirGraphCytoComponent implements OnInit, OnDestroy {
       grabbable: false,
     }));
 
-    // ✅ Ensure correct typing & filtering
+    // Ensure correct typing & filtering
     this.nodesOnly = validSubTreeData.filter((el: ElementDefinition) =>
       el.data?.id !== undefined && !el.data?.source && !el.data?.target
     );
 
-    // ✅ Update subtree only if more than 2 nodes exist
+    // Update subtree only if more than 2 nodes exist
     if ((this.nodesOnly?.length ?? 0) > 2) {
       this.girService.updateSubTreeData(validSubTreeData);
     }
@@ -221,7 +221,7 @@ export class GirGraphCytoComponent implements OnInit, OnDestroy {
   }
 
   exportToJpg() {
-    this.girService.exportGraphAsImage(this.currentCy);
+    this.girService.exportGraphAsImage(this.mneName, this.currentCy);
   }
 
   ngOnDestroy() {
