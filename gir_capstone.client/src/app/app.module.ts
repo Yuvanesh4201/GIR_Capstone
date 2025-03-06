@@ -15,6 +15,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { MatTableModule } from '@angular/material/table';
 import { CorporateStatusLegendComponent } from './components/corporate-status-legend/corporate-status-legend.component';
 import { CorporateSubtreeComponent } from './components/corporate-subtree/corporate-subtree.component';
+import { CorporateSearchComponent } from './components/corporate-search/corporate-search.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { CorporateSubtreeComponent } from './components/corporate-subtree/corpor
     OwnershipInfoComponent,
     OwnershipListComponent,
     CorporateStatusLegendComponent,
-    CorporateSubtreeComponent
+    CorporateSubtreeComponent,
+    CorporateSearchComponent
   ],
   imports: [
     BrowserModule,

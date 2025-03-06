@@ -18,13 +18,16 @@ export class GIRService {
   private subTreeListSubject = new BehaviorSubject<ElementDefinition[][]>([]);
   private currentCyGraphSubject = new BehaviorSubject<any>(null);
   private mainCyGraphSubject = new BehaviorSubject<any>(null);
-  mainCyGraph$ = this.mainCyGraphSubject.asObservable();
+  private isDropdownListOpenSubject = new BehaviorSubject<boolean>(false);
+  
 
   subTreeData$ = this.subTreeSubject.asObservable(); // Observable to listen for changes
   selectedCorporateEntity$ = this.selectedCorporateEntitySubject.asObservable();
   selectedOwnershipInfo$ = this.selectedOwnershipInfoSubject.asObservable();
   subTreeList$ = this.subTreeListSubject.asObservable();
   currentCyGraph$ = this.currentCyGraphSubject.asObservable();
+  mainCyGraph$ = this.mainCyGraphSubject.asObservable();
+  isDropdownListOpen$ = this.isDropdownListOpenSubject.asObservable();
   constructor(private http: HttpClient) { }
 
   getCorporates(): Observable<Corporate[]> {
@@ -101,6 +104,14 @@ export class GIRService {
     this.currentCyGraphSubject.next(this.mainCyGraphSubject.value);
   }
 
+  dropdownnListOpen() {
+    this.isDropdownListOpenSubject.next(true);
+  }
+
+  dropdownnListClose() {
+    this.isDropdownListOpenSubject.next(false);
+  }
+
   exportGraphAsImage(mneName:string, cy: cytoscape.Core) {
     if(!cy) {
       console.error("Cytoscape instance is not available.");
@@ -117,17 +128,6 @@ export class GIRService {
     const currentGraphRoot = this.currentCyGraphSubject.value
       ?.nodes()
       ?.roots()[0] ?? "No Root Found";
-
-    const cyRoot = cy?.elements()
-      ?.nodes()
-      ?.roots()[0]
-      ?.id() ?? "No Root Found";
-
-    const mainCyRoot = this.mainCyGraphSubject?.value
-      ?.elements()
-      ?.nodes()
-      ?.roots()[0]
-      ?.id() ?? "No Root Found";
 
     if (this.subTreeSubject.value === null || this.subTreeSubject.value === undefined) {
       link.download = `${mneName.replace(/\s+/g, '_')}.jpg`;

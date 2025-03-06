@@ -1,4 +1,7 @@
 <h1 class="title">{{ mneName }}</h1>
+<app-corporate-search [corporatesList] = corporateList
+(searchedCorporate) = "searchedCorporateEntity($event)"
+></app-corporate-search>
 <div class="radio-container">
   <label>
     <input type="radio" name="edgeStyle" value="bezier" (change)="applyEdgeStyle($event)" checked />

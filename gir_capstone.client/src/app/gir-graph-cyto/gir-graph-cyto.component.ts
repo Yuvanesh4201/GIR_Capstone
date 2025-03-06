@@ -15,6 +15,7 @@ import { Observable, Subject, takeUntil } from 'rxjs';
 export class GirGraphCytoComponent implements OnInit, OnDestroy {
   @ViewChild('graph', { static: false }) cyContainer!: ElementRef;
   corporateStructure: CorporateEntity[] = [];
+  corporateList: string[] = [];
   selectedOwnership!: Ownership;
   selectedOwnerships!: Ownership[];
   selectedOwnerName!: string;
@@ -48,6 +49,7 @@ export class GirGraphCytoComponent implements OnInit, OnDestroy {
             if (data) {
               console.log('Corporate ID Works:', this.corporateId);
               this.corporateStructure = data;
+              this.corporateList = data.map(corporate => corporate.name);
               this.renderGraph();
               this.girService.updateMainCyGraph(this.cy);
               this.girService.updateCurrentCyGraph(this.cy);
@@ -172,6 +174,7 @@ export class GirGraphCytoComponent implements OnInit, OnDestroy {
   handleBackgroundTap() {
     this.girService.clearSelectedCorporateEntity();
     this.girService.clearSelectedOwnershipInfo();
+    this.girService.dropdownnListClose();
     this.showSelectedOwnershipList = false;
   }
 
@@ -222,6 +225,23 @@ export class GirGraphCytoComponent implements OnInit, OnDestroy {
 
   exportToJpg() {
     this.girService.exportGraphAsImage(this.mneName, this.currentCy);
+  }
+
+  searchedCorporateEntity(item: string) {
+    const matchingNode = this.cy.nodes(`[label= "${item}"]`);
+
+    if (matchingNode.length > 0) {
+      this.cy.elements().unselect(); // Deselect all elements first
+      this.cy.center(matchingNode); // Move the canvas to the selected node
+
+      this.cy.animate({
+        center: { eles: matchingNode }, // Move camera to node
+        zoom: 2, // Adjust zoom level
+        duration: 1000 // Smooth animation over 1 second
+      });
+    } else {
+      console.log("No node found with label:", item);
+    }
   }
 
   ngOnDestroy() {

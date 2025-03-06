@@ -1,0 +1,24 @@
+  <div class="custom-search-wrapper">
+
+    <!-- Search Box (Side by Side) -->
+    <div class="custom-search-box">
+      <input type="text"
+             [(ngModel)]="searchQuery"
+             (focus)="isDropdownOpen = true"
+             class="custom-search-input"
+             placeholder="Search..." />
+      <button class="custom-clear-button" (click)="clearSearch()">✖</button>
+      <button class="custom-search-button" (click)="searchEntity()">
+        Search
+      </button>
+    </div>
+
+    <!-- Dropdown (Appears Below Input) -->
+    <ul *ngIf="isDropdownOpen && filteredItems.length" class="custom-dropdown">
+      <li *ngFor="let item of filteredItems"
+          (mousedown)="selectItem(item)"
+          class="custom-dropdown-item">
+        {{ item }}
+      </li>
+    </ul>
+  </div>
