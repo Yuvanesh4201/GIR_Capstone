@@ -227,6 +227,10 @@ export class GirGraphCytoComponent implements OnInit, OnDestroy {
     this.girService.exportGraphAsImage(this.mneName, this.currentCy);
   }
 
+  exportToPdf() {
+    this.girService.exportGraphAsPdf(this.mneName, this.currentCy);
+  }
+
   searchedCorporateEntity(item: string) {
     const matchingNode = this.cy.nodes(`[label= "${item}"]`);
 
