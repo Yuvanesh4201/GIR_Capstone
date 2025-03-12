@@ -30,6 +30,7 @@
   cursor: pointer;
   transition: background 0.3s ease;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 4
 }
 
   .reset-button:hover, .fit-button:hover, .pic-button:hover {
@@ -44,7 +45,7 @@
   right: 265px; /* Moves "Fit to Screen" button slightly to the left */
 }
 .pdf-button {
-  right: 400px; /* Moves "Fit to Screen" button slightly to the left */
+  right: 398px; /* Moves "Fit to Screen" button slightly to the left */
 }
 
 

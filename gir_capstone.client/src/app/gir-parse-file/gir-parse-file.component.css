@@ -1,0 +1,84 @@
+/* Container for the uploader */
+.xml-uploader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 420px;
+  margin: 40px auto;
+  text-align: center;
+}
+
+  /* Header */
+  .xml-uploader h3 {
+    font-size: 18px;
+    color: #333;
+    font-weight: 600;
+  }
+
+/* Styled File Upload Box */
+.file-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+  color: #007bff;
+  padding: 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  border: 2px dashed #007bff;
+}
+
+  .file-upload:hover {
+    background: #eaf3ff;
+    border-color: #0056b3;
+  }
+
+.upload-icon {
+  font-size: 28px;
+}
+
+.upload-text {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.file-name {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Parse Button */
+.parse-btn {
+  background: linear-gradient(135deg, #28a745, #218838);
+  color: white;
+  border: none;
+  padding: 14px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 16px;
+  font-weight: bold;
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+  .parse-btn:hover {
+    background: linear-gradient(135deg, #218838, #1e7e34);
+    box-shadow: 0 6px 12px rgba(40, 167, 69, 0.4);
+  }
+
+  .parse-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    box-shadow: none;
+  }

@@ -1,0 +1,15 @@
+<div class="xml-uploader">
+    <h3>Select an XML File</h3>
+
+    <label for="fileInput" class="file-upload">
+        <input type="file" id="fileInput" accept=".xml" (change)="onFileSelected($event)" hidden />
+        <span class="upload-icon">📂</span>
+        <span class="upload-text">Click to Upload</span>
+        <span class="file-name" *ngIf="selectedFile">{{ selectedFile.name }}</span>
+    </label>
+
+    <button class="parse-btn" (click)="parseFile()" [disabled]="!selectedFile">
+        Generate Graph
+    </button>
+</div>
+

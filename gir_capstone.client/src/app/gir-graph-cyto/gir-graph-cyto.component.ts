@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import cytoscape, { ElementDefinition } from 'cytoscape';
 import { CorporateEntity, Ownership } from '../models/company-structure.model';
@@ -12,7 +12,7 @@ import { Observable, Subject, takeUntil } from 'rxjs';
   templateUrl: './gir-graph-cyto.component.html',
   styleUrls: ['./gir-graph-cyto.component.css']
 })
-export class GirGraphCytoComponent implements OnInit, OnDestroy {
+export class GirGraphCytoComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('graph', { static: false }) cyContainer!: ElementRef;
   corporateStructure: CorporateEntity[] = [];
   corporateList: string[] = [];
@@ -34,7 +34,7 @@ export class GirGraphCytoComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   currentCy: any; 
 
-  constructor(private route: ActivatedRoute, private girService: GIRService) {}
+  constructor(private route: ActivatedRoute, private girService: GIRService) { }
 
   ngOnInit() {
     this.corporateId = this.route.snapshot.queryParamMap.get('id');
@@ -60,10 +60,25 @@ export class GirGraphCytoComponent implements OnInit, OnDestroy {
           }
         );
     }
+    else {
+      this.route.queryParams.subscribe(params => {
+        const parsedArray = params['data'] ? JSON.parse(params['data']) : [];
+        this.corporateStructure = parsedArray;
+        this.corporateList = this.corporateStructure.map(corporate => corporate.name);
+      });
+    }
 
     this.corporateEntityInfo$ = this.girService.selectedCorporateEntity$;
     this.ownershipInfo$ = this.girService.selectedOwnershipInfo$;
     this.girService.currentCyGraph$.subscribe(data => this.currentCy = data);
+  }
+
+  ngAfterViewInit(): void {
+    if (!this.corporateId && this.corporateStructure) {
+      this.renderGraph();
+      this.girService.updateMainCyGraph(this.cy);
+      this.girService.updateCurrentCyGraph(this.cy);
+    }
   }
 
   renderGraph(): void {
@@ -179,13 +194,19 @@ export class GirGraphCytoComponent implements OnInit, OnDestroy {
   }
 
   resetLayout() {
-    this.cy.reset();
-    this.cy.zoom(this.zoom);
-    this.cy.centre();
+
+    this.girService.currentCyGraph$.subscribe(graph => {
+      graph.reset();
+      graph.zoom(this.zoom);
+      graph.centre();
+    });
+
   }
 
   fitView() {
-    this.cy.fit();
+    this.girService.currentCyGraph$.subscribe(graph => {
+      graph.fit();
+    });
   }
 
   setShowOwnershipList(ownerships: Ownership[]) {
@@ -198,11 +219,13 @@ export class GirGraphCytoComponent implements OnInit, OnDestroy {
   }
 
   applyEdgeStyle(event: any) {
-    this.cy.edges().forEach((edge: cytoscape.EdgeSingular) => {
-      edge.style({
-        'curve-style': event.target.value,
+    this.girService.currentCyGraph$.subscribe(graph => {
+      graph.edges().forEach((edge: cytoscape.EdgeSingular) => {
+        edge.style({
+          'curve-style': event.target.value,
+        });
       });
-    });
+    })
   }
 
   //this will change later (use decoded values)

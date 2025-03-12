@@ -16,6 +16,7 @@ import { MatTableModule } from '@angular/material/table';
 import { CorporateStatusLegendComponent } from './components/corporate-status-legend/corporate-status-legend.component';
 import { CorporateSubtreeComponent } from './components/corporate-subtree/corporate-subtree.component';
 import { CorporateSearchComponent } from './components/corporate-search/corporate-search.component';
+import { GirParseFileComponent } from './gir-parse-file/gir-parse-file.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { CorporateSearchComponent } from './components/corporate-search/corporat
     OwnershipListComponent,
     CorporateStatusLegendComponent,
     CorporateSubtreeComponent,
-    CorporateSearchComponent
+    CorporateSearchComponent,
+    GirParseFileComponent
   ],
   imports: [
     BrowserModule,
