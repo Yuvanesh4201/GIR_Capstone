@@ -1,0 +1,28 @@
+<div class="custom-filter-box">
+  <div class="custom-filter-header" (click)="toggleFilter()">
+    <span class="custom-filter-title">Sort & Filter</span>
+    <span class="custom-filter-toggle" [ngClass]="{ 'rotated': showFilter }">▼</span>
+  </div>
+
+  <div class="custom-filter-content" [ngClass]="{ 'collapsed': !showFilter }">
+    <div class="custom-filter-wrapper">
+      <label for="sortType">Sort By</label>
+      <select id="sortType"
+              class="custom-filter-select"
+              [(ngModel)]="selectedSortType"
+              (change)="updateSortOptions()">
+        <option value="" disabled>Select Sort Type</option>
+        <option value="jurisdiction">Jurisdiction</option>
+        <option value="percentage">Percentage</option>
+      </select>
+
+      <label for="sortValue">Select Value</label>
+      <select id="sortValue" class="custom-filter-select" [(ngModel)]="selectedSortValue">
+        <option value="" disabled>Select Value</option>
+        <option *ngFor="let value of dynamicSortOptions" [value]="value">{{ value }}</option>
+      </select>
+
+      <button class="custom-filter-button" (click)="onSort()">Sort</button>
+    </div>
+  </div>
+</div>

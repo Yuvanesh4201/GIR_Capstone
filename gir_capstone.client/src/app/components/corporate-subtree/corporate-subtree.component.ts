@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import cytoscape, { ElementDefinition } from 'cytoscape';
 import { girCytoGraphStyle } from '../../gir-graph-cyto/gir-graph-cyto-style';
 import { GIRService } from '../../services/gir-graph.service';

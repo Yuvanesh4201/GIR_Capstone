@@ -2,6 +2,10 @@
 <app-corporate-search [corporatesList] = corporateList
 (searchedCorporate) = "searchedCorporateEntity($event)"
 ></app-corporate-search>
+<app-corporate-sort
+[jurisdictionList] = jurisdictionList
+(searchedOption) = sort($event) >
+</app-corporate-sort>
 <div class="radio-container">
   <label>
     <input type="radio" name="edgeStyle" value="bezier" (change)="applyEdgeStyle($event)" checked />

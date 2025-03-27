@@ -16,6 +16,7 @@ export class GirGraphCytoComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('graph', { static: false }) cyContainer!: ElementRef;
   corporateStructure: CorporateEntity[] = [];
   corporateList: string[] = [];
+  jurisdictionList: string[] = [];
   selectedOwnership!: Ownership;
   selectedOwnerships!: Ownership[];
   selectedOwnerName!: string;
@@ -50,7 +51,8 @@ export class GirGraphCytoComponent implements OnInit, AfterViewInit, OnDestroy {
               console.log('Corporate ID Works:', this.corporateId);
               this.corporateStructure = data;
               this.corporateList = data.map(corporate => corporate.name);
-              this.renderGraph();
+              this.jurisdictionList = data.map(corporate => corporate.jurisdiction);
+              this.renderGraph(this.corporateStructure);
               this.girService.updateMainCyGraph(this.cy);
               this.girService.updateCurrentCyGraph(this.cy);
             }
@@ -75,18 +77,21 @@ export class GirGraphCytoComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     if (!this.corporateId && this.corporateStructure) {
-      this.renderGraph();
+      this.renderGraph(this.corporateStructure);
       this.girService.updateMainCyGraph(this.cy);
       this.girService.updateCurrentCyGraph(this.cy);
     }
   }
 
-  renderGraph(): void {
+  renderGraph(corporateStructure: CorporateEntity[]): void {
+
+    const existingNodeIds = new Set(corporateStructure.map(node => node.id));
+
     this.cy = cytoscape({
       container: this.cyContainer.nativeElement,
       pixelRatio: 3,
       elements: [
-        ...this.corporateStructure.map(node => ({
+        ...corporateStructure.map(node => ({
           data: {
             id: node.id,
             label: node.name,
@@ -95,16 +100,18 @@ export class GirGraphCytoComponent implements OnInit, AfterViewInit, OnDestroy {
           },
           grabbable: false,
         })),
-        ...this.corporateStructure.flatMap(corp =>
-          corp.ownerships.map(edge => ({
-            data: {
-              source: edge.ownerEntityId,
-              target: corp.id,
-              label: `Owns ${edge.ownershipPercentage}%`,
-              ownershipInfo: edge,
-              ownedName: corp.name,
-              ownerName: edge.ownerName,
-            },
+        ...corporateStructure.flatMap(corp =>
+          corp.ownerships
+            .filter(edge => existingNodeIds.has(edge.ownerEntityId)) // ✅ Check if source exists
+            .map(edge => ({
+              data: {
+                source: edge.ownerEntityId,
+                target: corp.id,
+                label: `Owns ${edge.ownershipPercentage}%`,
+                ownershipInfo: edge,
+                ownedName: corp.name,
+                ownerName: edge.ownerName,
+              },
             grabbable: false,
           }))
         )
@@ -134,7 +141,12 @@ export class GirGraphCytoComponent implements OnInit, AfterViewInit, OnDestroy {
       name: 'breadthfirst',
       roots: this.cy.nodes('[type="UPE"]').map((node: cytoscape.NodeSingular ) => node.id()),
       directed: true,
-      spacingFactor: 1.5
+      spacingFactor: 1.5,
+      padding: 50,               // Padding around layout
+      avoidOverlap: true,        // Prevent node collisions
+      animate: true,
+      animationDuration: 500,
+      orientation: 'horizontal'    // or 'horizontal' for left-to-right flow
     }).run();
 
     this.cy.zoom(this.zoom);
@@ -194,7 +206,8 @@ export class GirGraphCytoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   resetLayout() {
-
+    this.renderGraph(this.corporateStructure);
+    this.girService.updateCurrentCyGraph(this.cy);
     this.girService.currentCyGraph$.subscribe(graph => {
       graph.reset();
       graph.zoom(this.zoom);
@@ -271,9 +284,50 @@ export class GirGraphCytoComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  sort(item:any) {
+
+    let sortedStructure: CorporateEntity[] = [];
+
+  if (item.type === 'jurisdiction') {
+    sortedStructure = this.corporateStructure.filter(
+      corporate => corporate.jurisdiction === item.value
+    );
+  } else if (item.type === 'percentage') {
+    const corporateIds = new Set<string>;
+    const filteredOwnerships: Ownership[] = [];
+    this.corporateStructure.forEach(corp => corp.ownerships.forEach(
+      ownership => {
+        const percent = ownership.ownershipPercentage;
+        if ((item.value === 'Associate' && percent >= 20 && percent < 50) ||
+          (item.value === 'Subsidary' && percent >= 50)) {
+
+          filteredOwnerships.push(ownership);
+          corporateIds.add(corp.id);
+          corporateIds.add(ownership.ownerEntityId);
+
+        }
+      }
+    ));
+
+    const filteredNodes = this.corporateStructure.filter(corp =>
+      corporateIds.has(corp.id)
+    );
+
+    sortedStructure = filteredNodes.map(corp => ({
+      ...corp,
+      ownerships: corp.ownerships.filter(o => filteredOwnerships.includes(o))
+    }));
+
+    }
+    this.renderGraph(sortedStructure);
+    this.girService.updateCurrentCyGraph(this.cy);
+    
+  }
+
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
     if (this.cy) this.cy.destroy();
   }
+
 }

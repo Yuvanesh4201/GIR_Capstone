@@ -17,6 +17,7 @@ import { CorporateStatusLegendComponent } from './components/corporate-status-le
 import { CorporateSubtreeComponent } from './components/corporate-subtree/corporate-subtree.component';
 import { CorporateSearchComponent } from './components/corporate-search/corporate-search.component';
 import { GirParseFileComponent } from './gir-parse-file/gir-parse-file.component';
+import { CorporateSortComponent } from './components/corporate-sort/corporate-sort.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { GirParseFileComponent } from './gir-parse-file/gir-parse-file.component
     CorporateStatusLegendComponent,
     CorporateSubtreeComponent,
     CorporateSearchComponent,
-    GirParseFileComponent
+    GirParseFileComponent,
+    CorporateSortComponent
   ],
   imports: [
     BrowserModule,
