@@ -77,6 +77,13 @@
     border-color: #1e40af;
   }
 
+.custom-button-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+}
+
 /* Sort button */
 .custom-filter-button {
   background-color: #2563eb;

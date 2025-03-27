@@ -51,7 +51,9 @@ export class GirGraphCytoComponent implements OnInit, AfterViewInit, OnDestroy {
               console.log('Corporate ID Works:', this.corporateId);
               this.corporateStructure = data;
               this.corporateList = data.map(corporate => corporate.name);
-              this.jurisdictionList = data.map(corporate => corporate.jurisdiction);
+              this.jurisdictionList = Array.from(
+                new Set(data.map(corporate => corporate.jurisdiction))
+              );
               this.renderGraph(this.corporateStructure);
               this.girService.updateMainCyGraph(this.cy);
               this.girService.updateCurrentCyGraph(this.cy);
@@ -284,7 +286,7 @@ export class GirGraphCytoComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  sort(item:any) {
+  filter(item:any) {
 
     let sortedStructure: CorporateEntity[] = [];
 
@@ -322,6 +324,64 @@ export class GirGraphCytoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.renderGraph(sortedStructure);
     this.girService.updateCurrentCyGraph(this.cy);
     
+  }
+  sort(item: any) {
+    this.renderGraph(this.corporateStructure);
+    this.girService.updateCurrentCyGraph(this.cy);
+    this.cy.nodes().forEach((node: any) => node.removeStyle());
+    this.cy.edges().forEach((edge: any) => edge.removeStyle());
+
+    if (item.type === 'jurisdiction') {
+      const targetNodes = this.cy.nodes().filter((node: any) =>
+        node.data('entityInfo').jurisdiction === item.value
+      );
+
+      targetNodes.forEach((node: any) => {
+        node.style({
+          'background-color': '#facc15',   // amber-400
+          'border-color': '#ca8a04',
+          'border-width': 3,
+          'color': '#111111',
+          'font-size': '16px',
+          'font-weight': 'bold',
+          'text-outline-color': '#fff',
+          'text-outline-width': 2,
+          'padding': '8px',                // adds inner spacing
+          'width': 'label',
+          'height': 'label'
+        });
+      });
+
+
+    } else if (item.type === 'percentage') {
+      const targetEdges = this.cy.edges().filter((edge: any) => {
+        const percent = edge.data('ownershipInfo')?.ownershipPercentage;
+
+        return (
+          (item.value === 'Associate' && percent >= 20 && percent < 50) ||
+          (item.value === 'Subsidary' && percent >= 50)
+        );
+      });
+
+      targetEdges.forEach((edge: any) => {
+        edge.style({
+          'line-color': '#facc15',           // yellow
+          'target-arrow-color': '#facc15',
+          'width': 4,
+          'font-size': '14px',               // 🔍 make label bigger
+          'font-weight': 'bold',
+          'color': '#111',                   // darker text
+          'text-outline-color': '#fff',      // contrast background
+          'text-outline-width': 2
+        });
+      });
+
+    }
+  }
+
+  clear() {
+    this.renderGraph(this.corporateStructure);
+    this.girService.updateCurrentCyGraph(this.cy);
   }
 
   ngOnDestroy() {

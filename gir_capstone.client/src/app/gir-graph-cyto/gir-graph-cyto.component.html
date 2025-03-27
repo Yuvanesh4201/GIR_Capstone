@@ -4,7 +4,9 @@
 ></app-corporate-search>
 <app-corporate-sort
 [jurisdictionList] = jurisdictionList
-(searchedOption) = sort($event) >
+(filterOption) = filter($event)
+(highlightOption) = sort($event)
+(clearOption) = clear()>
 </app-corporate-sort>
 <div class="radio-container">
   <label>

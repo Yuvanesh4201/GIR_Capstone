@@ -8,7 +8,9 @@ import { GIRService } from '../../services/gir-graph.service';
 })
 export class CorporateSortComponent {
   @Input() jurisdictionList: string[] | undefined;
-  @Output() searchedOption = new EventEmitter<{ type: string; value: string }>();
+  @Output() filterOption = new EventEmitter<{ type: string; value: string }>();
+  @Output() highlightOption = new EventEmitter<{ type: string; value: string }>();
+  @Output() clearOption = new EventEmitter();
   isDropdownOpen = false;
 
   selectedSortType: string = '';
@@ -35,8 +37,16 @@ export class CorporateSortComponent {
     this.selectedSortValue = '';
   }
 
-  onSort() {
-    this.searchedOption?.emit({ type: this.selectedSortType, value: this.selectedSortValue });
+  onFilter() {
+    this.filterOption?.emit({ type: this.selectedSortType, value: this.selectedSortValue });
+  }
+
+  onHighlight() {
+    this.highlightOption?.emit({ type: this.selectedSortType, value: this.selectedSortValue });
+  }
+
+  onClear() {
+    this.clearOption?.emit({ type: this.selectedSortType, value: this.selectedSortValue });
   }
 
   toggleFilter() {

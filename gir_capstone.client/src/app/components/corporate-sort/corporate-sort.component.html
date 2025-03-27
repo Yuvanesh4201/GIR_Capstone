@@ -22,7 +22,12 @@
         <option *ngFor="let value of dynamicSortOptions" [value]="value">{{ value }}</option>
       </select>
 
-      <button class="custom-filter-button" (click)="onSort()">Sort</button>
+      <!-- 🔘 Button Row -->
+      <div class="custom-button-row">
+        <button class="custom-filter-button" (click)="onFilter()">Filter</button>
+        <button class="custom-filter-button" (click)="onHighlight()">Highlight</button>
+        <button class="custom-filter-button" (click)="onClear()">Clear</button>
+      </div>
     </div>
   </div>
 </div>
