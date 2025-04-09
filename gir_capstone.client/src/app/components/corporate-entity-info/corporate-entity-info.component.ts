@@ -24,7 +24,7 @@ export class CorporateEntityInfoComponent implements OnInit {
       this.showOwnershipList.emit(ownerships);
     } else {
       console.warn('No ownership data available');
-      this.showOwnershipList.emit([]); // ✅ Prevent type errors
+      this.showOwnershipList.emit([]);
     }
   }
 }

@@ -37,15 +37,15 @@
     background: #0056A6;
   }
 
-/* Space the buttons */
+
 .fit-button {
-  right: 140px; /* Moves "Fit to Screen" button slightly to the left */
+  right: 140px;
 }
 .pic-button {
-  right: 265px; /* Moves "Fit to Screen" button slightly to the left */
+  right: 265px; 
 }
 .pdf-button {
-  right: 398px; /* Moves "Fit to Screen" button slightly to the left */
+  right: 398px; 
 }
 
 

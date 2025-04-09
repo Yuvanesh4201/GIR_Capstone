@@ -78,20 +78,20 @@ export class GIRService {
   }
 
   updateSubTreeList(newSubTree: ElementDefinition[]) {
-    const updatedList = [...this.subTreeListSubject.getValue(), newSubTree]; // ✅ Create new array
-    this.subTreeListSubject.next(updatedList); // ✅ Automatically triggers UI updates
+    const updatedList = [...this.subTreeListSubject.getValue(), newSubTree];
+    this.subTreeListSubject.next(updatedList);
   }
 
   removeLastSubTree() {
     const currentList = this.subTreeListSubject.getValue();
     if (currentList.length > 0) {
-      const updatedList = currentList.slice(0, -1); // ✅ Removes last element safely
-      this.subTreeListSubject.next(updatedList); // ✅ Triggers UI update
+      const updatedList = currentList.slice(0, -1);
+      this.subTreeListSubject.next(updatedList);
     }
   }
 
   clearSubTreeList() {
-    this.subTreeListSubject.next([]); // ✅ Automatically triggers UI updates
+    this.subTreeListSubject.next([]);
   }
 
   updateCurrentCyGraph(cy: cytoscape.Core) {
@@ -239,26 +239,24 @@ export class GIRService {
         }
       });
 
-      pdf.setPage(2); // Go back to Page 1
+      pdf.setPage(2);
 
-      //const defaultFontSize = pdf.getFontSize();
       const defaultFont = pdf.getFont();
 
       entityTableLinks.forEach((cell) => {
         if (rowPositions[cell.id]) {
-          pdf.setTextColor(0, 0, 255); // 🔹 Set text color to blue (RGB)
-          pdf.setFont("helvetica", "normal"); // 🔹 Make text bold
+          pdf.setTextColor(0, 0, 255);
+          pdf.setFont("helvetica", "normal");
           pdf.setFontSize(10);
           pdf.text("See Ownership", cell.x + 2, cell.y + 4);
-          //pdf.line(cell.x + 2, cell.y + 5, cell.x + 25, cell.y + 5);
 
           pdf.textWithLink("See Ownership", cell.x + 2, cell.y + 4, {
             pageNumber: 3, // Jump to Page 2 where Table 2 is
             top: rowPositions[cell.id], // Scroll to the correct row in Table 2
           });
 
-          pdf.setTextColor(0, 0, 0); // Reset text color to black
-          pdf.setFont(defaultFont.fontName, "normal"); // Reset font style
+          pdf.setTextColor(0, 0, 0); 
+          pdf.setFont(defaultFont.fontName, "normal"); 
         }
       });
 

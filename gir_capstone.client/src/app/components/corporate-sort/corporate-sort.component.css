@@ -1,4 +1,3 @@
-/* Main container box with toggle header */
 .custom-filter-box {
   position: absolute;
   bottom: 12vh;
@@ -8,12 +7,11 @@
   border-radius: 6px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   font-family: 'Arial', sans-serif;
-  font-size: 12px; /* Compact text */
+  font-size: 12px; 
   overflow: hidden;
   z-index: 3;
 }
 
-/* Clickable header bar (like legend style) */
 .custom-filter-header {
   display: flex;
   justify-content: space-between;
@@ -24,7 +22,6 @@
   font-size: 14px;
 }
 
-/* Toggle arrow icon */
 .custom-filter-toggle {
   transition: transform 0.3s ease-in-out;
 }
@@ -33,7 +30,6 @@
     transform: rotate(180deg);
   }
 
-/* Collapsible content with smooth height transition */
 .custom-filter-content {
   transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
   max-height: 500px;
@@ -46,21 +42,18 @@
     padding: 0 16px;
   }
 
-/* Inner form layout inside collapsible */
 .custom-filter-wrapper {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-  /* Label styling */
   .custom-filter-wrapper label {
     font-size: 14px;
     font-weight: 500;
     margin-bottom: 4px;
   }
 
-/* Dropdown style (shared) */
 .custom-filter-select {
   padding: 10px 15px;
   border: 2px solid #2563eb;
@@ -84,7 +77,6 @@
   margin-top: 8px;
 }
 
-/* Sort button */
 .custom-filter-button {
   background-color: #2563eb;
   color: white;

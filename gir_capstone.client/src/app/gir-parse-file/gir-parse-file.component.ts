@@ -27,7 +27,6 @@ export class GirParseFileComponent {
 
     this.selectedFile = inputElement.files[0];
 
-    // Optional: Check if the file is an XML file
     if (this.selectedFile.type !== "text/xml") {
       alert("Invalid File Type. Please select an XML file.");
       this.selectedFile = null; // Reset selected file
@@ -60,7 +59,7 @@ export class GirParseFileComponent {
          trimValues: true,
          allowBooleanAttributes: true,
          isArray: (name: string, jpath: string, isLeafNode: boolean, isAttribute: boolean) => {
-           return alwaysArray.includes(name); // ✅ If tag name is in alwaysArray, force it as an array
+           return alwaysArray.includes(name);
          },
        });
     
@@ -77,8 +76,8 @@ private getOtherUPE(upeList: any): CorporateEntity[] {
  
   if (upeList && Array.isArray(upeList)) {
     return upeList.map((entry: any) => {
-      const id = entry.OtherUPE?.ID ?? {}; // Ensure `id` is always an object
-      const tin = id.TIN ?? {}; // Ensure `tin` is always an object
+      const id = entry.OtherUPE?.ID ?? {};
+      const tin = id.TIN ?? {};
 
       return {
           id: uuidv4(),
@@ -89,7 +88,7 @@ private getOtherUPE(upeList: any): CorporateEntity[] {
           is_Excluded: false,
           statuses: Array.isArray(entry.GlobeStatus)
               ? entry.GlobeStatus.map((status: string) => status.slice(3))
-          : [], // Ensure `statuses` is always an array
+          : [],
         ownerships: entry.Ownership ?? [],
           qiir_Status: "",
       } as unknown as CorporateEntity;
@@ -105,24 +104,23 @@ private getCE(ceList: any, upeArray: CorporateEntity[]): CorporateEntity[] {
   }
 
   return ceList.map((entry: any) => {
-    const id = entry?.ID ?? {}; // Ensure `id` is always an object
-    const tin = id.TIN ?? {}; // Ensure `tin` is always an object
+    const id = entry?.ID ?? {};
+    const tin = id.TIN ?? {};
 
-    // Normalize Ownerships (ensure it's always an array)
     const ownerships = Array.isArray(entry.Ownership) ? entry.Ownership : [entry.Ownership];
 
     return {
       id: uuidv4(),
       name: id.Name ?? "N/A",
-      tin: tin ?? "N/A", // Extract text from XML TIN object
+      tin: tin ?? "N/A",
       jurisdiction: id.ResCountryCode ?? "N/A",
       parentId: "ce",
       is_Excluded: false,
       statuses: Array.isArray(entry.GlobeStatus)
         ? entry.GlobeStatus.map((status: string) => status.slice(3))
-        : [], // Ensure `statuses` is always an array
+        : [],
       ownerships: ownerships
-        .filter((ownership: any) => ownership?.TIN) // Remove null/undefined ownerships
+        .filter((ownership: any) => ownership?.TIN)
         .map((ownership: any) => {
           const owner = upeArray.find(entity => entity.tin === ownership.TIN);
 

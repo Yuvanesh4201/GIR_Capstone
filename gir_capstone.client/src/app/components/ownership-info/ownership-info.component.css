@@ -3,46 +3,46 @@
   flex-direction: column;
   top: 40px;
   left: 10px;
-  gap: 5px; /* Reduced gap for a more compact look */
-  max-width: 300px; /* Slightly larger for better layout */
-  padding: 12px 15px; /* Balanced inner spacing */
-  background: #f8f9fa; /* Softer, modern light-gray background */
-  border-radius: 6px; /* Subtle rounded corners */
-  border: 1px solid #d1d1d1; /* Light gray border for structure */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adds depth */
+  gap: 5px;
+  max-width: 300px; 
+  padding: 12px 15px;
+  background: #f8f9fa; 
+  border-radius: 6px; 
+  border: 1px solid #d1d1d1; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
   position: relative;
-  font-family: 'Arial', sans-serif; /* Professional font */
+  font-family: 'Arial', sans-serif; 
   margin-top: 10px;
   z-index: 4;
 }
 
 .info-row {
   display: flex;
-  align-items: center; /* Aligns labels and values properly */
+  align-items: center; 
   justify-content: space-between;
-  padding: 2px 0; /* Adds slight spacing for better readability */
+  padding: 2px 0; 
 }
 
   .info-row label {
-    font-size: 10px; /* Standardized professional font size */
-    font-weight: 600; /* Slightly heavier for clarity */
-    color: #333; /* Dark gray for better contrast */
+    font-size: 10px; 
+    font-weight: 600; 
+    color: #333; 
     flex: 1;
-    white-space: nowrap; /* Prevents label text from wrapping */
+    white-space: nowrap; 
   }
 
   .info-row span {
     flex: 2;
     text-align: right;
     font-size: 10px;
-    color: #555; /* Slightly lighter than label for hierarchy */
+    color: #555;
     font-weight: 500;
     overflow: hidden;
-    text-overflow: ellipsis; /* Ensures text does not overflow */
+    text-overflow: ellipsis; 
     white-space: nowrap;
   }
 
-/* ✅ Optional: Add a hover effect for a sleek interactive feel */
+
 .info-box:hover {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
   border-color: #bbb;

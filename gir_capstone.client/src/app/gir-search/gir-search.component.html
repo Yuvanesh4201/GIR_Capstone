@@ -1,7 +1,6 @@
 <div class="custom-search-container">
   <div class="custom-search-wrapper">
 
-    <!-- Search Box (Side by Side) -->
     <div class="custom-search-box">
       <input type="text"
              [(ngModel)]="searchQuery"
@@ -19,7 +18,6 @@
       </button>
     </div>
 
-    <!-- Dropdown (Appears Below Input) -->
     <ul *ngIf="isDropdownOpen && filteredItems.length" class="custom-dropdown">
       <li *ngFor="let item of filteredItems"
           (mousedown)="selectItem(item)"

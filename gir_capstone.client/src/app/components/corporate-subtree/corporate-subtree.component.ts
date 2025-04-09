@@ -31,7 +31,7 @@ export class CorporateSubtreeComponent implements OnInit, AfterViewInit, OnDestr
     this.girService.subTreeData$.pipe(take(1)).subscribe(data => {
       console.log("subTreeData received:", data);
       if (data) {
-        this.girService.updateSubTreeList(data); //dont like this
+        this.girService.updateSubTreeList(data);
         this.renderSubTree(data);
         this.girService.updateCurrentCyGraph(this.cy);
       }

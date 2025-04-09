@@ -7,11 +7,4 @@
     <!-- Folder where production build objects will be placed -->
     <PublishAssetsDirectory>$(MSBuildProjectDirectory)\dist\gir_capstone.client\</PublishAssetsDirectory>
   </PropertyGroup>
-  <ItemGroup>
-    <Folder Include="src\app\utils\" />
-    <Folder Include="src\app\store\actions\" />
-    <Folder Include="src\app\store\effects\" />
-    <Folder Include="src\app\store\sandbox\" />
-    <Folder Include="src\app\store\reducers\" />
-  </ItemGroup>
 </Project>

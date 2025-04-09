@@ -8,14 +8,14 @@ export class LoaderInterceptorService implements HttpInterceptor {
   constructor(private loaderService: LoaderService) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    this.loaderService.show(); // Show loader when request starts
+    this.loaderService.show();
 
     return next.handle(req).pipe(
-      timeout(10000), // Set timeout for the API call (10 seconds)
-      finalize(() => this.loaderService.hide()), // Hide loader when API completes (success/failure/timeout)
+      timeout(10000),
+      finalize(() => this.loaderService.hide()),
       catchError(error => {
         console.error('API Error:', error);
-        return throwError(() => error); // Rethrow the error after logging
+        return throwError(() => error);
       })
     );
   }

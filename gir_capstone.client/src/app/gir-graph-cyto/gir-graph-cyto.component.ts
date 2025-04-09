@@ -17,12 +17,9 @@ export class GirGraphCytoComponent implements OnInit, AfterViewInit, OnDestroy {
   corporateStructure: CorporateEntity[] = [];
   corporateList: string[] = [];
   jurisdictionList: string[] = [];
-  selectedOwnership!: Ownership;
   selectedOwnerships!: Ownership[];
   selectedOwnerName!: string;
   selectedOwnedName!: string;
-  showSelectedCorporateEntityInfo: boolean = false;
-  showSelectedOwnershipInfo: boolean = false;
   showSelectedOwnershipList: boolean = false;
   cy: any;
   corporateId: any;
@@ -44,7 +41,7 @@ export class GirGraphCytoComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (this.corporateId) {
       this.girService.getCorporateStructure(this.corporateId, this.xmlParse)
-        .pipe(takeUntil(this.destroy$)) // 🚀 Ensure automatic cleanup
+        .pipe(takeUntil(this.destroy$))
         .subscribe(
           (data) => {
             if (data) {
@@ -104,7 +101,7 @@ export class GirGraphCytoComponent implements OnInit, AfterViewInit, OnDestroy {
         })),
         ...corporateStructure.flatMap(corp =>
           corp.ownerships
-            .filter(edge => existingNodeIds.has(edge.ownerEntityId)) // ✅ Check if source exists
+            .filter(edge => existingNodeIds.has(edge.ownerEntityId))
             .map(edge => ({
               data: {
                 source: edge.ownerEntityId,
@@ -144,11 +141,10 @@ export class GirGraphCytoComponent implements OnInit, AfterViewInit, OnDestroy {
       roots: this.cy.nodes('[type="UPE"]').map((node: cytoscape.NodeSingular ) => node.id()),
       directed: true,
       spacingFactor: 1.5,
-      padding: 50,               // Padding around layout
-      avoidOverlap: true,        // Prevent node collisions
+      padding: 50,  
+      avoidOverlap: true,
       animate: true,
       animationDuration: 500,
-      orientation: 'horizontal'    // or 'horizontal' for left-to-right flow
     }).run();
 
     this.cy.zoom(this.zoom);
@@ -179,12 +175,10 @@ export class GirGraphCytoComponent implements OnInit, AfterViewInit, OnDestroy {
       grabbable: false,
     }));
 
-    // Ensure correct typing & filtering
     this.nodesOnly = validSubTreeData.filter((el: ElementDefinition) =>
       el.data?.id !== undefined && !el.data?.source && !el.data?.target
     );
 
-    // Update subtree only if more than 2 nodes exist
     if ((this.nodesOnly?.length ?? 0) > 2) {
       this.girService.updateSubTreeData(validSubTreeData);
     }
@@ -243,7 +237,6 @@ export class GirGraphCytoComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   }
 
-  //this will change later (use decoded values)
   setNodeStyleType(node: CorporateEntity): string {
     if (node.parentId) {
       switch (node.qiir_Status) {
@@ -273,13 +266,13 @@ export class GirGraphCytoComponent implements OnInit, AfterViewInit, OnDestroy {
     const matchingNode = this.cy.nodes(`[label= "${item}"]`);
 
     if (matchingNode.length > 0) {
-      this.cy.elements().unselect(); // Deselect all elements first
-      this.cy.center(matchingNode); // Move the canvas to the selected node
+      this.cy.elements().unselect();
+      this.cy.center(matchingNode);
 
       this.cy.animate({
-        center: { eles: matchingNode }, // Move camera to node
-        zoom: 2, // Adjust zoom level
-        duration: 1000 // Smooth animation over 1 second
+        center: { eles: matchingNode },
+        zoom: 2,
+        duration: 1000
       });
     } else {
       console.log("No node found with label:", item);
@@ -346,8 +339,7 @@ export class GirGraphCytoComponent implements OnInit, AfterViewInit, OnDestroy {
           'font-weight': 'bold',
           'text-outline-color': '#fff',
           'text-outline-width': 2,
-          'padding': '8px',                // adds inner spacing
-          'width': 'label',
+          'padding': '8px',                
           'height': 'label'
         });
       });
@@ -368,10 +360,10 @@ export class GirGraphCytoComponent implements OnInit, AfterViewInit, OnDestroy {
           'line-color': '#facc15',           // yellow
           'target-arrow-color': '#facc15',
           'width': 4,
-          'font-size': '14px',               // 🔍 make label bigger
+          'font-size': '14px',
           'font-weight': 'bold',
-          'color': '#111',                   // darker text
-          'text-outline-color': '#fff',      // contrast background
+          'color': '#111',
+          'text-outline-color': '#fff',
           'text-outline-width': 2
         });
       });

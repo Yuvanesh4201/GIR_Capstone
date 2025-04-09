@@ -3,41 +3,41 @@
   flex-direction: column;
   top: 40px;
   left: 10px;
-  gap: 5px; /* Reduced gap for a more compact look */
-  max-width: 200px; /* Slightly larger for better layout */
-  padding: 12px 15px; /* Balanced inner spacing */
-  background: #f8f9fa; /* Softer, modern light-gray background */
-  border-radius: 6px; /* Subtle rounded corners */
-  border: 1px solid #d1d1d1; /* Light gray border for structure */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adds depth */
+  gap: 5px; 
+  max-width: 200px; 
+  padding: 12px 15px; 
+  background: #f8f9fa; 
+  border-radius: 6px; 
+  border: 1px solid #d1d1d1; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
   position: relative;
-  font-family: 'Arial', sans-serif; /* Professional font */
+  font-family: 'Arial', sans-serif; 
   z-index: 100;
 }
 
 .info-row {
   display: flex;
-  align-items: center; /* Aligns labels and values properly */
+  align-items: center; 
   justify-content: space-between;
-  padding: 2px 0; /* Adds slight spacing for better readability */
+  padding: 2px 0; 
 }
 
   .info-row label {
-    font-size: 10px; /* Standardized professional font size */
-    font-weight: 600; /* Slightly heavier for clarity */
-    color: #333; /* Dark gray for better contrast */
+    font-size: 10px; 
+    font-weight: 600; 
+    color: #333; 
     flex: 1;
-    white-space: nowrap; /* Prevents label text from wrapping */
+    white-space: nowrap; 
   }
 
   .info-row span {
     flex: 2;
     text-align: center;
     font-size: 10px;
-    color: #555; /* Slightly lighter than label for hierarchy */
+    color: #555; 
     font-weight: 500;
     overflow: hidden;
-    text-overflow: ellipsis; /* Ensures text does not overflow */
+    text-overflow: ellipsis; 
     white-space: nowrap;
   }
 
@@ -45,62 +45,57 @@
     flex: 2;
     text-align: center;
     font-size: 10px;
-    color: #007BFF; /* A standard blue for links */
+    color: #007BFF; 
     font-weight: 500;
     overflow: hidden;
-    text-overflow: ellipsis; /* Prevents overflow */
+    text-overflow: ellipsis; 
     white-space: nowrap;
-    text-decoration: none; /* Removes default underline */
-    transition: color 0.3s ease-in-out; /* Smooth hover effect */
+    text-decoration: none;
+    transition: color 0.3s ease-in-out;
   }
 
     .info-row a:hover {
-      color: #0056b3; /* Darker blue on hover for interaction */
-      text-decoration: underline; /* Adds underline on hover */
+      color: #0056b3;
+      text-decoration: underline; 
     }
 
-
-/* ✅ Optional: Add a hover effect for a sleek interactive feel */
 .info-box:hover {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
   border-color: #bbb;
 }
 
-/* Ensures Globe Statuses row aligns with other fields */
 .info-row-status {
   display: flex;
-  align-items: center; /* Keep label and content aligned */
+  align-items: center;
   padding: 2px 0;
 }
 
-  /* Keeps label width consistent with other labels */
   .info-row-status label {
     font-size: 10px;
     font-weight: 600;
     color: #333;
     white-space: nowrap;
     flex: 1;
-    text-align: left; /* Ensure label stays aligned */
+    text-align: left;
   }
 
-/* Ensures the status values align properly */
 .status-list {
-  flex: 2; /* Matches other fields' spacing */
+  flex: 2; 
   display: flex;
-  flex-direction: column; /* Stack statuses vertically */
-  gap: 2px; /* Slight spacing between statuses */
+  flex-direction: column; 
+  gap: 2px; 
 }
 
-/* Improves readability and keeps formatting aligned */
+
 .status-item {
   font-size: 10px;
   font-weight: 500;
   color: #333;
   padding: 2px 6px;
-  text-align: center; /* Ensures text is aligned properly */
+  text-align: center; 
 }
 
-/* Ensures that "Ownerships: Ownership Details" does not appear on one line */
+
 .ownership-container {
   display: flex;
   flex-direction: column;
@@ -108,15 +103,15 @@
   padding-top: 5px;
 }
 
-/* Aligns Ownership Details properly */
+
 .ownership-details {
   display: flex;
   flex-direction: column;
-  padding-left: 10px; /* Indentation for cleaner look */
+  padding-left: 10px; 
   font-size: 10px;
   color: #555;
   font-weight: 500;
-  gap: 2px; /* Space between each row */
+  gap: 2px; 
 }
 
 
